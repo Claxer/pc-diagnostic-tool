@@ -1,406 +1,253 @@
 # PC Diagnostic Tool
 
-A simple **Python-based PC Diagnostic Tool** that runs in the terminal and displays useful information about a computer's system, CPU, RAM, disk, network, battery, processes, storage, performance, and overall system health.
+A simple **Python-based PC Diagnostic Tool** that runs in the terminal and provides a wide range of system diagnostic and monitoring features. The program can display information about the computer's hardware, operating system, CPU, RAM, storage, network, battery, running processes, Python environment, files, folders, and overall system health.
 
-This project was created as a beginner-friendly Python project to practice functions, loops, conditional statements, user input, file handling, system information, exception handling, process management, directory handling, and the use of Python libraries.
+The project started as a basic system information program and was expanded into a more complete command-line diagnostic utility. It now includes **hardware monitoring, process management, storage analysis, network testing, file analysis, performance monitoring, health checks, and diagnostic report generation**.
+
+This project was created as a beginner-friendly Python project to practice functions, loops, conditional statements, user input, lists, dictionaries, exception handling, file handling, directory traversal, process management, subprocess commands, system information, and external Python libraries.
+
+---
 
 ## Features
 
-### System Information
+### CPU Load Per Core
 
-* Operating system
-* System version
-* Computer name
-* Machine type
-* System architecture
-* Processor information
+The tool can display CPU usage for each individual processor core.
 
-### CPU Information
-
-* Physical CPU cores
-* Logical CPU cores
-* CPU usage
-* CPU frequency
-* Minimum CPU frequency
-* Maximum CPU frequency
-* CPU usage per individual core
-
-### RAM Information
-
-* Total RAM
-* Used RAM
-* Available RAM
-* RAM usage percentage
+* Displays each CPU core
+* Shows CPU usage percentage
+* Uses a loop to display each core
+* Helps identify uneven CPU usage
+* Provides more detailed CPU monitoring
 
 ### Virtual Memory and Swap
 
-* Virtual memory information
-* Virtual memory usage
+The program provides information about virtual memory and swap memory.
+
+* Virtual memory total
+* Virtual memory used
 * Available virtual memory
-* Swap memory
-* Swap memory usage
+* Virtual memory usage percentage
+* Swap memory total
+* Swap memory used
 * Swap memory free space
+* Swap memory usage percentage
 
-### Disk Information
+### Disk Activity
 
-* Available drives
-* Total storage
-* Used storage
-* Free storage
-* Disk usage percentage
-* Disk activity
+The tool can display basic disk activity information.
+
 * Total read operations
 * Total write operations
-* Read and write counts
+* Total data read
+* Total data written
+* Disk I/O statistics
 
-### Storage Summary
+### Network Interface Details
 
-* Total storage
-* Used storage
-* Free storage
-* Overall storage information
+The program can inspect available network interfaces.
 
-### Disk Space Warning
-
-* Checks disk usage
-* Displays storage usage
-* Warns when disk space is getting low
-* Identifies drives with high storage usage
-
-### Network Information
-
-* Computer name
-* Local IP address
-* Basic network information
-
-### Network Interfaces
-
-* Network adapter names
+* Network interface names
 * IP addresses
 * Network masks
 * Broadcast addresses
-* Available network interfaces
-
-### Network Connections
-
-* Active network connections
-* Connection status
-* Local address information
-* Network connection count
+* Available network adapters
+* Address family information
 
 ### Hostname and DNS Information
 
+The program can retrieve basic hostname and DNS-related information.
+
 * Computer hostname
 * Canonical hostname
-* IP addresses associated with the computer
+* IP addresses
+* Hostname lookup information
 * Basic DNS information
-
-### Internet Connection Test
-
-* Tests basic internet connectivity
-* Checks connection to a test server
-* Displays connection status
-* Measures basic response time
-
-### Ping Test
-
-* Allows the user to enter a website or IP address
-* Sends four ping requests
-* Displays ping results
-* Supports Windows and other operating systems
-* Helps check basic network connectivity
-
-### MAC Address
-
-* Detects the computer's MAC address
-* Displays the MAC address in a readable format
-
-### Battery Information
-
-* Battery percentage
-* Charging status
-* Estimated remaining time
-* Battery power status
-
-### Detailed Battery Health
-
-* Battery percentage
-* Charging status
-* Estimated remaining time
-* Battery condition
-* High, normal, low, or critical battery status
-
-### System Uptime
-
-* Boot time
-* Current time
-* System uptime
-
-### Boot Information
-
-* Last boot time
-* Current time
-* Calculated uptime
-
-### System Temperature
-
-* Checks available temperature sensors
-* Displays temperature readings where supported
-* Supports systems that provide temperature sensor information
-
-### System Health Check
-
-* CPU usage status
-* RAM usage status
-* Basic health warnings
-* Overall system health status
-
-### Quick Diagnostic Scan
-
-* Performs a quick system check
-* Checks CPU usage
-* Checks RAM usage
-* Checks disk usage
-* Checks battery level when available
-* Displays potential issues
-* Reports whether major problems were detected
-
-### Diagnostic Checklist
-
-* Checks CPU usage
-* Checks RAM usage
-* Checks disk usage
-* Checks battery status
-* Displays warnings
-* Counts detected issues
-* Provides a simple diagnostic checklist
-
-### System Health Score
-
-* CPU health score
-* RAM health score
-* Disk health score
-* Overall health score
-* Health status
-
-### Performance Summary
-
-* CPU performance status
-* RAM performance status
-* Disk usage status
-* Basic performance warnings
-
-### System Summary
-
-* Computer information
-* Operating system
-* Processor
-* CPU cores
-* CPU usage
-* RAM
-* Disk storage
-* Disk usage
-* Python version
-
-### Running Processes
-
-* Currently running processes
-* Process ID
-* Process name
-* Process status
-* Total process count
-* Displays a list of running processes
-
-### Top CPU Processes
-
-* Processes using the most CPU
-* CPU usage percentage
-* Process ID
-* Process name
-* Sorts processes based on CPU usage
-
-### Top RAM Processes
-
-* Processes using the most RAM
-* Memory usage percentage
-* Process ID
-* Process name
-* Sorts processes based on memory usage
-
-### Process Search
-
-* Searches for a running process
-* Allows the user to enter a process name
-* Displays matching process IDs
-* Displays process status
-* Helps locate specific running programs
-
-### Process Termination
-
-* Allows the user to enter a process ID
-* Displays the selected process
-* Asks for confirmation before termination
-* Attempts to terminate the selected process
-* Handles invalid process IDs
-* Handles permission errors
-
-### System Resource Monitor
-
-* Continuously monitors CPU usage
-* Continuously monitors RAM usage
-* Displays updated resource information
-* Runs until the user stops the monitor
-* Uses `CTRL+C` to stop monitoring
-
-### Python Information
-
-* Python version
-* Python installation path
-* Python build
-* Python compiler
-
-### Python Package Check
-
-* Checks installed Python packages
-* Checks `psutil`
-* Checks `pip`
-* Checks `setuptools`
-* Displays whether packages are installed
-
-### GPU Information
-
-* Graphics card information
-* GPU name
-* GPU memory information
-* Driver information where available
-
-### Motherboard Information
-
-* Motherboard manufacturer
-* Motherboard product information
-* Serial number where available
-
-### User Information
-
-* Current Windows username
-* Home directory
-* Computer name
-
-### Environment Variables
-
-* Displays system environment variables
-* Shows variable names and values
-* Displays the number of available variables
-* Limits displayed results to prevent excessive terminal output
-
-### Folder Size Checker
-
-* Allows the user to enter a folder path
-* Calculates folder size
-* Displays size in MB
-* Displays size in GB
-* Handles inaccessible files
-
-### Folder File Counter
-
-* Counts files inside a folder
-* Counts folders inside a folder
-* Supports subfolders
-* Displays the total number of files
-* Displays the total number of folders
-
-### File Extension Analyzer
-
-* Scans files inside a folder
-* Groups files by extension
-* Counts different file types
-* Sorts extensions by file count
-* Identifies files without an extension
-
-### Large File Finder
-
-* Allows the user to enter a folder path
-* Searches for large files
-* Allows the user to set a minimum file size
-* Sorts large files by size
-* Displays the largest files found
-* Handles inaccessible files
-
-### Duplicate File Finder
-
-* Searches for possible duplicate files
-* Groups files based on file size
-* Displays possible duplicate groups
-* Shows file paths
-* Helps identify files that may take unnecessary storage space
-
-> The current duplicate-file feature groups files by size. It does not perform a complete file-content hash comparison.
-
-### Temporary File Checker
-
-* Finds the system temporary folder
-* Counts temporary files
-* Calculates temporary file size
-* Displays temporary storage usage
 
 ### Windows Services
 
-* Displays Windows services
-* Lists available service names
-* Supports Windows systems
+For Windows systems, the program can display available Windows services.
+
+* Lists Windows services
+* Displays service names
+* Uses the Windows `sc` command
 * Displays up to 30 services
+* Handles systems where the command is unavailable
 
 ### Startup Programs
 
-* Checks Windows startup folders
-* Displays startup files
-* Checks user startup folder
-* Checks system startup folder
+The program checks the Windows startup folders.
+
+* User startup folder
+* System startup folder
+* Startup files
+* Startup shortcuts
+* Displays detected startup items
 
 ### System Architecture Details
+
+Provides additional operating system and architecture information.
 
 * Operating system
 * OS release
 * OS version
 * Machine type
 * Processor
-* Architecture
+* System architecture
 * Platform information
 * Python version
 
-### Save Diagnostic Report
+### Python Package Check
 
-* Creates a diagnostic report
-* Saves the report as a `.txt` file
-* Includes system information
-* Includes CPU usage
-* Includes RAM usage
-* Includes disk usage
-* Includes username
-* Includes Python version
-* Includes report date and time
+The program checks whether important Python packages and tools are installed.
 
-### Help
+Currently checked packages include:
 
-* Explains how to use the program
-* Provides basic instructions
-* Explains the menu system
-* Provides information about diagnostic limitations
+* `psutil`
+* `pip`
+* `setuptools`
 
-### About
+The feature uses Python's package manager through `subprocess` to check package availability.
 
-* Displays information about the project
-* Shows the project purpose
-* Displays the project version
-* Shows the technologies used
+### Folder File Counter
+
+The program can count files and folders inside a selected directory.
+
+* Counts files
+* Counts folders
+* Includes subfolders
+* Uses `os.walk()`
+* Displays total file count
+* Displays total folder count
+
+### File Extension Analyzer
+
+The tool can analyze the types of files inside a folder.
+
+* Detects file extensions
+* Counts files by extension
+* Supports subfolders
+* Detects files without extensions
+* Sorts file types based on file count
+
+Example:
+
+```text
+.py : 18 file(s)
+.txt : 25 file(s)
+.jpg : 12 file(s)
+.mp4 : 5 file(s)
+```
+
+### Duplicate File Finder
+
+The program can search for possible duplicate files.
+
+* Scans files inside a folder
+* Groups files based on file size
+* Displays possible duplicate groups
+* Displays file paths
+* Shows the size of possible duplicate files
+
+> The current version identifies possible duplicates by comparing file sizes. It does not compare the actual contents or file hashes.
+
+### Detailed Battery Health
+
+Provides additional battery information.
+
+* Battery percentage
+* Charging status
+* Estimated remaining time
+* Battery condition
+* High battery status
+* Normal battery status
+* Low battery status
+* Critical battery status
+
+### Diagnostic Checklist
+
+The program performs a basic checklist of important system resources.
+
+It checks:
+
+* CPU usage
+* RAM usage
+* Disk usage
+* Battery status
+
+The program counts detected issues and displays a final diagnostic result.
+
+### System Resource Monitor
+
+The program can continuously monitor system resources.
+
+* Real-time CPU usage
+* Real-time RAM usage
+* Continuous monitoring
+* Updates every second
+* Runs until manually stopped
+* Uses `CTRL+C` to stop monitoring
+
+Example:
+
+```text
+---------- SYSTEM RESOURCE MONITOR ----------
+Press CTRL+C to stop the monitor.
+
+CPU: 18.5% | RAM: 55.2%
+CPU: 21.3% | RAM: 55.4%
+CPU: 17.8% | RAM: 55.1%
+```
+
+### Process Search
+
+The program can search for running processes.
+
+* Allows the user to enter a process name
+* Searches currently running processes
+* Displays matching process IDs
+* Displays process names
+* Displays process status
+* Handles processes that disappear during scanning
+
+### Process Termination
+
+The program provides a basic process termination feature.
+
+* Accepts a process ID
+* Displays the selected process name
+* Requests user confirmation
+* Attempts to terminate the process
+* Handles invalid process IDs
+* Handles missing processes
+* Handles permission errors
+
+Example:
+
+```text
+---------- PROCESS TERMINATION ----------
+Enter process PID: 2210
+
+Process Name: example.exe
+Are you sure you want to terminate this process? (yes/no): no
+
+Process termination cancelled.
+```
 
 ### Clear Screen
 
-* Clears the terminal screen
+The program can clear the terminal screen.
+
 * Supports Windows
 * Supports other operating systems
+* Uses `cls` on Windows
+* Uses `clear` on other systems
 
-## Menu
+---
+
+# Updated Menu
+
+The current version contains **53 diagnostic functions** plus the exit option.
 
 ```text
 ========================================
@@ -463,640 +310,337 @@ This project was created as a beginner-friendly Python project to practice funct
 ========================================
 ```
 
-## Technologies Used
+---
 
-* Python
-* `psutil`
-* `platform`
-* `socket`
-* `datetime`
-* `os`
-* `sys`
-* `subprocess`
-* `getpass`
-* `uuid`
-* `tempfile`
+# What Was Added in Version 3.0
 
-## Requirements
+The current version has been expanded from a basic PC information program into a more complete diagnostic tool.
 
-Before running the program, make sure you have:
+### Hardware Monitoring
 
-* Python 3.x
-* PyCharm, VS Code, or another Python editor
-* `psutil`
-* Windows for some Windows-specific hardware and system information features
+Added:
 
-## Installation
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/yourusername/PC-Diagnostic-Tool.git
-```
-
-### 2. Open the Project
-
-Open the project folder in **PyCharm** or your preferred Python editor.
-
-### 3. Install psutil
-
-Open the terminal and run:
-
-```bash
-pip install psutil
-```
-
-You can also install it using:
-
-```bash
-python -m pip install psutil
-```
-
-### 4. Run the Program
-
-Run:
-
-```bash
-python main.py
-```
-
-Or run `main.py` directly from PyCharm.
-
-## Project Structure
-
-```text
-PC-Diagnostic-Tool/
-│
-├── main.py
-├── README.md
-└── requirements.txt
-```
-
-## Example
-
-When the program starts, it displays a menu where the user can choose which diagnostic function they want to use.
-
-Example:
-
-```text
-========================================
-          PC DIAGNOSTIC TOOL
-========================================
-1.  System Information
-2.  CPU Information
-3.  RAM Information
-4.  Disk Information
-...
-49. Diagnostic Checklist
-50. System Resource Monitor
-51. Process Search
-52. Process Termination
-53. Clear Screen
-0.  Exit
-========================================
-
-Enter your choice:
-```
-
-### CPU Information
-
-```text
-Enter your choice: 2
-
----------- CPU INFORMATION ----------
-CPU Cores        : 4
-Logical CPUs     : 8
-CPU Usage        : 15.2 %
-CPU Frequency    : 2394.0 MHz
-Minimum Frequency: 800.0 MHz
-Maximum Frequency: 4200.0 MHz
-```
-
-### CPU Load Per Core
-
-```text
-Enter your choice: 36
-
----------- CPU LOAD PER CORE ----------
-CPU Core 1 : 12.5 %
-CPU Core 2 : 18.2 %
-CPU Core 3 : 9.7 %
-CPU Core 4 : 14.1 %
-```
-
-### Virtual Memory
-
-```text
-Enter your choice: 37
-
----------- VIRTUAL MEMORY ----------
-Virtual Memory Total : 16.0 GB
-Virtual Memory Used  : 9.5 GB
-Virtual Memory Free  : 6.5 GB
-Virtual Memory Usage : 59.4 %
-
-Swap Memory Total    : 4.0 GB
-Swap Memory Used     : 0.5 GB
-Swap Memory Free     : 3.5 GB
-Swap Memory Usage    : 12.5 %
-```
-
-### Disk Activity
-
-```text
-Enter your choice: 38
-
----------- DISK ACTIVITY ----------
-Total Read  : 245.32 GB
-Total Write : 182.47 GB
-Read Count  : 124583
-Write Count : 98452
-```
-
-### Network Interface Details
-
-```text
-Enter your choice: 39
-
----------- NETWORK INTERFACES ----------
-
-Interface: Ethernet
-  Family : ...
-  Address: 192.168.1.10
-  Netmask: 255.255.255.0
-```
-
-### Hostname and DNS
-
-```text
-Enter your choice: 40
-
----------- HOSTNAME AND DNS ----------
-Hostname : DESKTOP-PC
-Canonical Name : DESKTOP-PC
-IP Addresses :
- - 192.168.1.10
-```
-
-### Running Processes
-
-```text
-Enter your choice: 10
-
----------- RUNNING PROCESSES ----------
-Total Processes : 145
-
-PID       NAME                         STATUS
------------------------------------------------
-1          System                       running
-432        explorer.exe                 running
-1024       python.exe                   running
-...
-```
-
-### Top CPU Processes
-
-```text
-Enter your choice: 11
-
----------- TOP CPU PROCESSES ----------
-
-PID       CPU %      NAME
------------------------------------------------
-1024      15.4       python.exe
-432       8.7        explorer.exe
-2210      5.2        chrome.exe
-```
-
-### Process Search
-
-```text
-Enter your choice: 51
-
----------- PROCESS SEARCH ----------
-Enter process name to search: chrome
-
-PID: 2210 | Name: chrome.exe | Status: running
-PID: 2350 | Name: chrome.exe | Status: running
-```
-
-### Process Termination
-
-```text
-Enter your choice: 52
-
----------- PROCESS TERMINATION ----------
-Enter process PID: 2210
-
-Process Name: example.exe
-Are you sure you want to terminate this process? (yes/no): no
-
-Process termination cancelled.
-```
-
-### System Health Check
-
-```text
----------- SYSTEM HEALTH CHECK ----------
-
-CPU Usage : 23.5 %
-RAM Usage : 61.2 %
-
-CPU Status : Normal
-RAM Status : Normal
-
-Health Check Complete.
-```
-
-### Quick Diagnostic Scan
-
-```text
-========================================
-         QUICK DIAGNOSTIC SCAN
-========================================
-
-CPU Usage : 23.5 %
-RAM Usage : 61.2 %
-Disk Usage: 48.7 %
-
-Checking system status...
-
-[OK] CPU usage is normal.
-[OK] RAM usage is normal.
-[OK] Disk space is sufficient.
-[OK] Battery level is acceptable.
-
-----------------------------------------
-No major problems detected.
-Quick scan complete.
-```
-
-### Diagnostic Checklist
-
-```text
----------- DIAGNOSTIC CHECKLIST ----------
-
-Checking CPU...
-[OK] CPU usage is acceptable.
-
-Checking RAM...
-[OK] RAM usage is acceptable.
-
-Checking Disk...
-[OK] Disk space is acceptable.
-
-Checking Battery...
-[OK] Battery level is acceptable.
-
-========================================
-Diagnostic Checklist: No major issues found.
-========================================
-```
-
-### System Resource Monitor
-
-```text
----------- SYSTEM RESOURCE MONITOR ----------
-Press CTRL+C to stop the monitor.
-
-CPU: 18.5% | RAM: 55.2%
-CPU: 21.3% | RAM: 55.4%
-CPU: 17.8% | RAM: 55.1%
-```
-
-Press `CTRL+C` to stop the monitor.
-
-### System Summary
-
-```text
-========================================
-          SYSTEM SUMMARY
-========================================
-
-Computer Name : DESKTOP-PC
-Operating System: Windows
-OS Version     : Windows Version
-Processor      : Intel Processor
-CPU Cores      : 4
-Logical CPUs   : 8
-CPU Usage      : 15.2 %
-Total RAM      : 16.0 GB
-RAM Usage      : 61.2 %
-System Disk    : 476.84 GB
-Disk Usage     : 48.7 %
-Python Version : 3.x.x
-```
-
-### Large File Finder
-
-```text
----------- LARGE FILE FINDER ----------
-
-Enter folder path: C:\Users\User\Downloads
-Minimum file size in MB: 500
-
-Searching...
-
-Large Files:
------------------------------------------------
-1250.45 MB - C:\Users\User\Downloads\file1.zip
-850.20 MB - C:\Users\User\Downloads\video.mp4
-620.75 MB - C:\Users\User\Downloads\backup.zip
-```
-
-### File Extension Analyzer
-
-```text
----------- FILE EXTENSION ANALYZER ----------
-
-File Types:
-.txt : 25 file(s)
-.py : 18 file(s)
-.jpg : 12 file(s)
-.mp4 : 5 file(s)
-.zip : 3 file(s)
-```
-
-### Folder File Counter
-
-```text
----------- FOLDER FILE COUNTER ----------
-
-Folder : C:\Users\User\Downloads
-Files  : 125
-Folders: 18
-```
-
-### Duplicate File Finder
-
-```text
----------- DUPLICATE FILE FINDER ----------
-
-Possible duplicate group:
-File Size: 125.50 MB
-- C:\Users\User\Downloads\file1.zip
-- C:\Users\User\Documents\file1.zip
-
-Possible duplicate groups: 1
-Files were grouped by size only.
-```
-
-### Internet Connection Test
-
-```text
----------- INTERNET CONNECTION TEST ----------
-
-Connection Status : Connected
-Test Server       : google.com
-Response Time     : 25.31 ms
-```
-
-### Ping Test
-
-```text
----------- PING TEST ----------
-
-Enter website or IP address: google.com
-
-Pinging google.com...
-Reply from ...
-Reply from ...
-Reply from ...
-Reply from ...
-```
-
-### Save Diagnostic Report
-
-The program can create a text file called:
-
-```text
-diagnostic_report.txt
-```
-
-The report contains basic system and performance information that can be saved for later reference.
-
-Example:
-
-```text
-========================================
-       PC DIAGNOSTIC REPORT
-========================================
-
-System Information
-------------------
-Operating System : Windows
-System Version   : Windows Version
-Computer Name    : DESKTOP-PC
-Architecture     : 64bit
-Processor        : Intel Processor
-
-Performance
------------
-CPU Usage  : 15.2%
-RAM Usage  : 61.2%
-Disk Usage : 48.7%
-
-Python Version : 3.x.x
-Username       : User
-
-Report Created : 2026-09-28 10:30:15
-========================================
-```
-
-## Learning Objectives
-
-This project helps practice the following Python concepts:
-
-* Functions
-* Function parameters
-* `if`, `elif`, and `else`
-* `while` loops
-* `for` loops
-* Lists
-* Dictionaries
-* User input using `input()`
-* Modules and libraries
-* Exception handling
-* Basic calculations
-* File handling
-* Reading computer resource usage
-* Sorting system data
-* Processing lists of processes
-* Working with operating system information
-* Working with directories and files
-* Searching through files
-* Processing file extensions
-* Working with process IDs
-* Working with `subprocess`
-* Working with environment variables
-* Working with dates and times
-* Creating menu-driven programs
-* Monitoring system resources
-* Generating text reports
-
-## Purpose
-
-The purpose of this project is to create a simple command-line tool that allows users to check useful computer information without using a graphical interface.
-
-It is also a practice project for learning how Python can interact with information from the computer's operating system.
-
-The project has been expanded to provide more **performance monitoring, file analysis, process management, storage analysis, network diagnostics, and system diagnostic features**.
-
-Users can now check:
-
-```text
-System Information
-        ↓
-CPU Information
-        ↓
-RAM Information
-        ↓
-Storage Information
-        ↓
-Network Information
-        ↓
-Battery Information
-        ↓
-Running Processes
-        ↓
-File and Folder Information
-        ↓
-Performance Monitoring
-        ↓
-Network Diagnostics
-        ↓
-Hardware Information
-        ↓
-Health Checks
-        ↓
-Diagnostic Report
-```
-
-## Diagnostic Features
-
-The tool can be used to perform several basic diagnostic checks:
-
-### Hardware
-
-* CPU
-* RAM
-* Disk
-* GPU
-* Motherboard
-* Battery
-* Temperature sensors
-
-### Operating System
-
-* Windows information
-* System architecture
-* Boot information
-* Running processes
-* Windows services
-* Startup programs
-* Environment variables
-
-### Storage
-
-* Disk usage
-* Storage summary
-* Folder size
-* File count
-* File extensions
-* Large files
-* Temporary files
-* Possible duplicate files
-
-### Network
-
-* IP address
-* Network interfaces
-* Network connections
-* DNS information
-* Internet connection
-* Ping testing
-* MAC address
-
-### Performance
-
-* CPU usage
-* CPU usage per core
-* RAM usage
+* CPU load per core
 * Virtual memory
 * Swap memory
 * Disk activity
-* Process CPU usage
-* Process RAM usage
-* Resource monitoring
+* Detailed battery health
+* Temperature monitoring
+* GPU information
+* Motherboard information
+
+### Process Management
+
+Added:
+
+* Running process listing
+* Top CPU processes
+* Top RAM processes
+* Process searching
+* Process termination
+* Continuous resource monitoring
+
+### Network Diagnostics
+
+Added:
+
+* Network interfaces
+* Hostname and DNS information
+* Network connections
+* Internet connection testing
+* Ping testing
+* MAC address detection
+
+### Storage and File Analysis
+
+Added:
+
+* Folder size checking
+* Folder file counting
+* File extension analysis
+* Large file searching
+* Possible duplicate file detection
+* Temporary file checking
+* Storage summary
+* Disk space warnings
+
+### Windows System Tools
+
+Added:
+
+* Windows services
+* Startup programs
+* Windows-specific hardware information
+* System architecture details
+
+### Python Environment
+
+Added:
+
+* Python information
+* Python installation path
+* Python build information
+* Python compiler information
+* Python package checking
+
+### Diagnostic Tools
+
+Added:
+
+* Quick diagnostic scan
+* Diagnostic checklist
+* Performance summary
 * System health score
+* System summary
+* Full diagnostic report
+* Saved text reports
 
-## Important Notes
+---
 
-Some features depend on the computer and operating system.
+# Updated Learning Objectives
 
-For example:
+This project provides practice with several important Python programming concepts:
 
-* Battery information may not be available on desktop computers.
-* Temperature information depends on available hardware sensors.
-* GPU and motherboard information may depend on Windows system tools.
-* Some process and network information may require administrator permissions.
-* Different computers may display different hardware information.
-* The internet connection test requires an active network connection.
-* The ping test depends on the destination server allowing ping requests.
-* Windows services and startup information are intended mainly for Windows systems.
-* Some commands may not be available on newer Windows installations.
-* Hardware information can vary depending on the manufacturer's drivers.
-* Process termination may fail when administrator permissions are required.
-* Duplicate files are currently identified by matching file sizes rather than comparing complete file contents.
-* Environment variables may contain system-specific information and should be handled carefully when sharing reports.
+* Functions
+* Function calls
+* Variables
+* Strings
+* Integers and floating-point numbers
+* Lists
+* Dictionaries
+* Tuples
+* `if`, `elif`, and `else`
+* `for` loops
+* `while` loops
+* `input()`
+* String methods
+* File handling
+* Directory traversal
+* `os.walk()`
+* Sorting data
+* Lambda functions
+* Exception handling
+* `try` and `except`
+* Modules
+* External libraries
+* Process management
+* Process IDs
+* System resource monitoring
+* Subprocess commands
+* Environment variables
+* Date and time handling
+* Network connections
+* File extensions
+* System information
+* Menu-driven programming
+* Report generation
 
-## Safety and Usage Notes
+---
 
-This program is mainly designed to **read and display diagnostic information**.
+# Python Modules Used
 
-Some features can interact with running processes, particularly the **Process Termination** feature.
+The project uses both built-in Python modules and the external `psutil` library.
 
-Before terminating a process, make sure you understand what the process is used for. System processes should not be terminated unless you know what you are doing.
+### Built-in Modules
 
-The program also does not automatically delete files, clean temporary files, modify system settings, or change hardware configurations.
+```text
+platform
+socket
+os
+sys
+subprocess
+getpass
+uuid
+tempfile
+datetime
+```
 
-## Future Improvements
+### External Library
 
-Possible features that can be added in future versions:
+```text
+psutil
+```
 
-* Internet speed test
-* More detailed CPU temperature monitoring
-* More detailed GPU information
-* More detailed storage information
-* Export reports as `.csv` files
-* System performance history
-* Automatic health recommendations
+`psutil` is used to access system and process information such as:
+
+* CPU usage
+* CPU frequency
+* RAM usage
+* Disk usage
+* Disk activity
+* Network interfaces
+* Network connections
+* Battery information
+* Running processes
+* System uptime
+* Temperature sensors
+
+---
+
+# Project Statistics
+
+The current version provides:
+
+```text
+53 Menu Options
+50+ Python Functions
+Hardware Diagnostics
+Software Diagnostics
+Network Diagnostics
+Storage Analysis
+Process Management
+Performance Monitoring
+Health Checking
+Report Generation
+```
+
+The exact number of available features may increase as the project continues to be developed.
+
+---
+
+# Diagnostic Categories
+
+The program can now be divided into several major categories:
+
+```text
+PC DIAGNOSTIC TOOL
+        |
+        +-- Hardware
+        |     +-- CPU
+        |     +-- RAM
+        |     +-- Disk
+        |     +-- GPU
+        |     +-- Motherboard
+        |     +-- Battery
+        |     +-- Temperature
+        |
+        +-- Operating System
+        |     +-- Windows Information
+        |     +-- Services
+        |     +-- Startup Programs
+        |     +-- Architecture
+        |     +-- Environment Variables
+        |
+        +-- Processes
+        |     +-- Running Processes
+        |     +-- CPU Processes
+        |     +-- RAM Processes
+        |     +-- Process Search
+        |     +-- Process Termination
+        |
+        +-- Storage
+        |     +-- Disk Usage
+        |     +-- Folder Size
+        |     +-- File Counter
+        |     +-- File Extensions
+        |     +-- Large Files
+        |     +-- Duplicate Files
+        |     +-- Temporary Files
+        |
+        +-- Network
+        |     +-- IP Address
+        |     +-- Network Interfaces
+        |     +-- DNS
+        |     +-- Connections
+        |     +-- Internet Test
+        |     +-- Ping
+        |     +-- MAC Address
+        |
+        +-- Performance
+        |     +-- CPU Usage
+        |     +-- RAM Usage
+        |     +-- Disk Activity
+        |     +-- Resource Monitor
+        |     +-- Health Score
+        |
+        +-- Reports
+              +-- Quick Scan
+              +-- Checklist
+              +-- Full Report
+              +-- Saved Report
+```
+
+---
+
+# Updated Purpose
+
+The purpose of this project is to create a beginner-friendly command-line application that demonstrates how Python can interact with a computer's operating system.
+
+Instead of only displaying basic computer information, the program now provides several diagnostic categories that allow users to inspect **hardware resources, software information, running processes, network connections, storage usage, files, folders, and system performance**.
+
+The project also demonstrates how Python can interact with operating-system commands through `subprocess`, work with files and directories using `os`, inspect processes using `psutil`, and generate diagnostic reports using standard Python file handling.
+
+The project is designed mainly for **learning and basic system inspection**, rather than replacing professional diagnostic software.
+
+---
+
+# Safety Notes
+
+Most features of the program only read and display information.
+
+However, the **Process Termination** feature can affect currently running applications.
+
+Users should:
+
+* Check the process name before terminating it.
+* Avoid terminating important Windows system processes.
+* Avoid terminating processes they do not recognize.
+* Use administrator permissions only when necessary.
+* Understand that terminating some processes can cause applications or system components to stop working.
+
+The program does **not automatically delete files**, clean temporary files, modify system settings, or change hardware configurations.
+
+---
+
+# Future Improvements
+
+Possible future additions include:
+
+* Real-time CPU graphs
+* Real-time RAM graphs
+* Real-time disk graphs
+* Internet speed testing
+* Network download/upload monitoring
+* CPU temperature monitoring improvements
+* GPU temperature monitoring
+* GPU utilization monitoring
+* Disk health monitoring
+* SMART disk information
+* File hash comparison
+* More accurate duplicate-file detection
 * Process filtering
-* Process monitoring with automatic refresh
-* Network speed monitoring
-* Detailed network adapter information
-* More startup application information
-* Automatic diagnostic report generation
-* Graphs and charts for CPU and RAM usage
-* Automatic temporary file cleanup
-* Hardware inventory
-* More advanced disk health information
-* File hash comparison for more accurate duplicate detection
-* Real-time disk monitoring
-* Real-time network monitoring
+* Process auto-refresh
+* Process resource history
+* Network adapter statistics
+* Automatic health recommendations
+* CSV report export
+* JSON report export
+* More detailed hardware inventory
+* Diagnostic history
+* Automatic report timestamps
+* System performance logging
+* Automatic diagnostic summaries
+* More advanced Windows startup information
+* Graphical user interface version
+* Scheduled diagnostic scans
 
-## Disclaimer
+---
 
-This project is intended for **educational and personal use**. The diagnostic information displayed depends on the computer and operating system where the program is running.
+# Version
 
-Some features may provide different information depending on the operating system, available hardware, permissions, installed system components, drivers, and available system tools.
+```text
+PC Diagnostic Tool
+Version: 3.0
+```
 
-The program is designed primarily for monitoring and displaying information and should not be considered a professional hardware diagnostic or repair tool.
+Version 3.0 includes expanded **hardware monitoring, process management, file analysis, storage analysis, network diagnostics, performance monitoring, Windows system tools, and diagnostic features**.
 
-## Author
+---
+
+# Author
 
 **Jose Navoa**
 
 Aspiring Information Technology Student
 
-Created as a Python learning project.
+Created as a Python learning and system diagnostic project.
