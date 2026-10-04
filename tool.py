@@ -7,6 +7,7 @@ import subprocess
 import getpass
 import uuid
 import tempfile
+import time
 from datetime import datetime, timedelta
 
 
@@ -18,10 +19,12 @@ def show_system_information():
     print("\n---------- SYSTEM INFORMATION ----------")
     print("Operating System :", platform.system())
     print("System Version   :", platform.version())
+    print("OS Release       :", platform.release())
     print("Computer Name    :", socket.gethostname())
     print("Machine          :", platform.machine())
     print("Architecture     :", platform.architecture()[0])
     print("Processor        :", platform.processor())
+    print("Platform         :", platform.platform())
 
 
 # =========================================================
@@ -30,6 +33,7 @@ def show_system_information():
 
 def show_cpu_information():
     print("\n---------- CPU INFORMATION ----------")
+
     print("CPU Cores        :", psutil.cpu_count(logical=False))
     print("Logical CPUs     :", psutil.cpu_count(logical=True))
     print("CPU Usage        :", psutil.cpu_percent(interval=1), "%")
@@ -56,6 +60,27 @@ def show_cpu_per_core():
 
 
 # =========================================================
+# CPU LOAD AVERAGE
+# =========================================================
+
+def show_cpu_load_average():
+    print("\n---------- CPU LOAD AVERAGE ----------")
+
+    try:
+        load = os.getloadavg()
+
+        print("1 Minute Load  :", round(load[0], 2))
+        print("5 Minute Load  :", round(load[1], 2))
+        print("15 Minute Load :", round(load[2], 2))
+
+    except AttributeError:
+        print("CPU load average is not available on this system.")
+
+    except OSError:
+        print("CPU load average could not be retrieved.")
+
+
+# =========================================================
 # RAM INFORMATION
 # =========================================================
 
@@ -66,7 +91,42 @@ def show_ram_information():
     print("Total RAM        :", round(memory.total / (1024 ** 3), 2), "GB")
     print("Used RAM         :", round(memory.used / (1024 ** 3), 2), "GB")
     print("Available RAM    :", round(memory.available / (1024 ** 3), 2), "GB")
+    print("Free RAM         :", round(memory.free / (1024 ** 3), 2), "GB")
     print("RAM Usage        :", memory.percent, "%")
+
+
+# =========================================================
+# DETAILED RAM INFORMATION
+# =========================================================
+
+def show_detailed_ram():
+    print("\n---------- DETAILED RAM INFORMATION ----------")
+
+    memory = psutil.virtual_memory()
+
+    total = memory.total / (1024 ** 3)
+    used = memory.used / (1024 ** 3)
+    available = memory.available / (1024 ** 3)
+    free = memory.free / (1024 ** 3)
+
+    print("Total Memory     :", round(total, 2), "GB")
+    print("Used Memory      :", round(used, 2), "GB")
+    print("Available Memory :", round(available, 2), "GB")
+    print("Free Memory      :", round(free, 2), "GB")
+    print("Cached Memory    :", round(memory.cached / (1024 ** 3), 2), "GB")
+    print("Buffers          :", round(memory.buffers / (1024 ** 3), 2), "GB")
+    print("Usage            :", memory.percent, "%")
+
+    print("\nRAM Status:")
+
+    if memory.percent >= 90:
+        print("CRITICAL - RAM usage is very high.")
+    elif memory.percent >= 75:
+        print("WARNING - RAM usage is getting high.")
+    elif memory.percent >= 50:
+        print("MODERATE - RAM usage is normal.")
+    else:
+        print("GOOD - Plenty of RAM is available.")
 
 
 # =========================================================
@@ -104,6 +164,8 @@ def show_disk_information():
             usage = psutil.disk_usage(partition.mountpoint)
 
             print("\nDrive :", partition.device)
+            print("Mount :", partition.mountpoint)
+            print("File System :", partition.fstype)
             print("Total :", round(usage.total / (1024 ** 3), 2), "GB")
             print("Used  :", round(usage.used / (1024 ** 3), 2), "GB")
             print("Free  :", round(usage.free / (1024 ** 3), 2), "GB")
@@ -111,6 +173,9 @@ def show_disk_information():
 
         except PermissionError:
             print("Unable to access:", partition.device)
+
+        except FileNotFoundError:
+            print("Drive is no longer available:", partition.device)
 
 
 # =========================================================
@@ -133,6 +198,50 @@ def show_disk_activity():
     print("Total Write :", round(write_gb, 2), "GB")
     print("Read Count  :", disk.read_count)
     print("Write Count :", disk.write_count)
+
+
+# =========================================================
+# DISK SPEED SNAPSHOT
+# =========================================================
+
+def disk_speed_snapshot():
+    print("\n---------- DISK SPEED SNAPSHOT ----------")
+
+    print("Measuring disk activity...")
+    print("Please wait...")
+
+    before = psutil.disk_io_counters()
+
+    if before is None:
+        print("Disk information is unavailable.")
+        return
+
+    start_time = time.time()
+
+    time.sleep(2)
+
+    after = psutil.disk_io_counters()
+
+    if after is None:
+        print("Disk information is unavailable.")
+        return
+
+    elapsed = time.time() - start_time
+
+    read_bytes = after.read_bytes - before.read_bytes
+    write_bytes = after.write_bytes - before.write_bytes
+
+    read_mb = read_bytes / (1024 ** 2)
+    write_mb = write_bytes / (1024 ** 2)
+
+    read_speed = read_mb / elapsed
+    write_speed = write_mb / elapsed
+
+    print("\nRead Activity  :", round(read_speed, 2), "MB/s")
+    print("Write Activity :", round(write_speed, 2), "MB/s")
+
+    print("\nNote:")
+    print("This is an activity snapshot, not a full disk benchmark.")
 
 
 # =========================================================
@@ -178,6 +287,80 @@ def show_network_interfaces():
 
             if address.broadcast:
                 print("  Broadcast:", address.broadcast)
+
+
+# =========================================================
+# NETWORK TRAFFIC
+# =========================================================
+
+def show_network_traffic():
+    print("\n---------- NETWORK TRAFFIC ----------")
+
+    network = psutil.net_io_counters()
+
+    if network is None:
+        print("Network traffic information is unavailable.")
+        return
+
+    sent = network.bytes_sent / (1024 ** 3)
+    received = network.bytes_recv / (1024 ** 3)
+
+    print("Data Sent     :", round(sent, 2), "GB")
+    print("Data Received :", round(received, 2), "GB")
+    print("Packets Sent  :", network.packets_sent)
+    print("Packets Recv. :", network.packets_recv)
+    print("Errors Sent   :", network.errout)
+    print("Errors Recv.  :", network.errin)
+
+
+# =========================================================
+# NETWORK SPEED SNAPSHOT
+# =========================================================
+
+def network_speed_snapshot():
+    print("\n---------- NETWORK SPEED SNAPSHOT ----------")
+
+    before = psutil.net_io_counters()
+
+    print("Measuring network activity...")
+    time.sleep(2)
+
+    after = psutil.net_io_counters()
+
+    elapsed = 2
+
+    sent_bytes = after.bytes_sent - before.bytes_sent
+    received_bytes = after.bytes_recv - before.bytes_recv
+
+    sent_kbps = (sent_bytes / 1024) / elapsed
+    received_kbps = (received_bytes / 1024) / elapsed
+
+    print("Upload Activity   :", round(sent_kbps, 2), "KB/s")
+    print("Download Activity :", round(received_kbps, 2), "KB/s")
+
+    print("\nNote:")
+    print("This measures current network activity, not your maximum internet speed.")
+
+
+# =========================================================
+# NETWORK PACKET STATISTICS
+# =========================================================
+
+def show_network_packets():
+    print("\n---------- NETWORK PACKET STATISTICS ----------")
+
+    network = psutil.net_io_counters()
+
+    if network is None:
+        print("Network statistics are unavailable.")
+        return
+
+    print("Packets Sent       :", network.packets_sent)
+    print("Packets Received   :", network.packets_recv)
+    print("Errors Sent        :", network.errout)
+    print("Errors Received    :", network.errin)
+    print("Dropped Sent       :", network.dropout)
+    print("Dropped Received   :", network.dropin)
 
 
 # =========================================================
@@ -286,6 +469,31 @@ def show_uptime():
 
 
 # =========================================================
+# CURRENT DATE AND TIME
+# =========================================================
+
+def show_current_datetime():
+    print("\n---------- CURRENT DATE AND TIME ----------")
+
+    current_time = datetime.now()
+
+    print(
+        "Date :",
+        current_time.strftime("%Y-%m-%d")
+    )
+
+    print(
+        "Time :",
+        current_time.strftime("%H:%M:%S")
+    )
+
+    print(
+        "Day  :",
+        current_time.strftime("%A")
+    )
+
+
+# =========================================================
 # HEALTH CHECK
 # =========================================================
 
@@ -328,6 +536,7 @@ def show_running_processes():
         try:
             info = process.info
             processes.append(info)
+
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
@@ -344,6 +553,47 @@ def show_running_processes():
 
     if len(processes) > 20:
         print("\nShowing the first 20 processes.")
+
+
+# =========================================================
+# PROCESS COUNT SUMMARY
+# =========================================================
+
+def process_count_summary():
+    print("\n---------- PROCESS COUNT SUMMARY ----------")
+
+    total = 0
+    running = 0
+    sleeping = 0
+    stopped = 0
+    other = 0
+
+    for process in psutil.process_iter(["status"]):
+        try:
+            total += 1
+
+            status = process.info["status"]
+
+            if status == psutil.STATUS_RUNNING:
+                running += 1
+
+            elif status == psutil.STATUS_SLEEPING:
+                sleeping += 1
+
+            elif status == psutil.STATUS_STOPPED:
+                stopped += 1
+
+            else:
+                other += 1
+
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+
+    print("Total Processes   :", total)
+    print("Running Processes :", running)
+    print("Sleeping Processes:", sleeping)
+    print("Stopped Processes :", stopped)
+    print("Other Processes   :", other)
 
 
 # =========================================================
@@ -368,7 +618,10 @@ def show_top_cpu_processes():
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
-    processes.sort(key=lambda process: process["cpu"], reverse=True)
+    processes.sort(
+        key=lambda process: process["cpu"],
+        reverse=True
+    )
 
     print("\nPID       CPU %      NAME")
     print("-----------------------------------------------")
@@ -390,7 +643,9 @@ def show_top_ram_processes():
 
     processes = []
 
-    for process in psutil.process_iter(["pid", "name", "memory_percent"]):
+    for process in psutil.process_iter(
+        ["pid", "name", "memory_percent"]
+    ):
         try:
             processes.append({
                 "pid": process.info["pid"],
@@ -401,7 +656,10 @@ def show_top_ram_processes():
         except (psutil.NoSuchProcess, psutil.AccessDenied):
             pass
 
-    processes.sort(key=lambda process: process["memory"], reverse=True)
+    processes.sort(
+        key=lambda process: process["memory"],
+        reverse=True
+    )
 
     print("\nPID       RAM %      NAME")
     print("-----------------------------------------------")
@@ -429,7 +687,9 @@ def search_process():
 
     found = False
 
-    for process in psutil.process_iter(["pid", "name", "status"]):
+    for process in psutil.process_iter(
+        ["pid", "name", "status"]
+    ):
         try:
             name = process.info["name"]
 
@@ -473,6 +733,7 @@ def terminate_process():
         if confirmation == "yes":
             process.terminate()
             print("Process termination requested.")
+
         else:
             print("Process termination cancelled.")
 
@@ -504,6 +765,7 @@ def show_network_connections():
         print("-----------------------------------------------")
 
         for connection in connections[:15]:
+
             status = connection.status
 
             if connection.laddr:
@@ -553,9 +815,16 @@ def check_python_packages():
     ]
 
     for package in packages:
+
         try:
             result = subprocess.run(
-                [sys.executable, "-m", "pip", "show", package],
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "show",
+                    package
+                ],
                 capture_output=True,
                 text=True
             )
@@ -588,22 +857,28 @@ def show_performance_summary():
 
     if cpu >= 90:
         print("- CPU usage is very high.")
+
     elif cpu >= 70:
         print("- CPU usage is moderately high.")
+
     else:
         print("- CPU usage is normal.")
 
     if memory.percent >= 90:
         print("- RAM usage is very high.")
+
     elif memory.percent >= 70:
         print("- RAM usage is moderately high.")
+
     else:
         print("- RAM usage is normal.")
 
     if disk.percent >= 90:
         print("- Disk space is almost full.")
+
     elif disk.percent >= 75:
         print("- Disk space is getting full.")
+
     else:
         print("- Disk space is normal.")
 
@@ -623,18 +898,28 @@ def calculate_health_score():
     memory_score = max(0, 100 - memory)
     disk_score = max(0, 100 - disk)
 
-    score = (cpu_score + memory_score + disk_score) / 3
+    score = (
+        cpu_score +
+        memory_score +
+        disk_score
+    ) / 3
 
     print("CPU Score  :", round(cpu_score, 2))
     print("RAM Score  :", round(memory_score, 2))
     print("Disk Score :", round(disk_score, 2))
 
-    print("\nOverall Health Score :", round(score, 2), "%")
+    print(
+        "\nOverall Health Score :",
+        round(score, 2),
+        "%"
+    )
 
     if score >= 80:
         print("Status : Good")
+
     elif score >= 60:
         print("Status : Fair")
+
     else:
         print("Status : Needs Attention")
 
@@ -659,10 +944,14 @@ def check_folder_size():
     total_size = 0
 
     for root, directories, files in os.walk(folder):
+
         for file in files:
+
             try:
                 file_path = os.path.join(root, file)
+
                 total_size += os.path.getsize(file_path)
+
             except (PermissionError, FileNotFoundError):
                 pass
 
@@ -691,6 +980,7 @@ def count_folder_files():
     folder_count = 0
 
     for root, directories, files in os.walk(folder):
+
         folder_count += len(directories)
         file_count += len(files)
 
@@ -715,7 +1005,9 @@ def analyze_file_extensions():
     extensions = {}
 
     for root, directories, files in os.walk(folder):
+
         for file in files:
+
             extension = os.path.splitext(file)[1].lower()
 
             if extension == "":
@@ -723,6 +1015,7 @@ def analyze_file_extensions():
 
             if extension in extensions:
                 extensions[extension] += 1
+
             else:
                 extensions[extension] = 1
 
@@ -739,7 +1032,12 @@ def analyze_file_extensions():
     )
 
     for extension, count in sorted_extensions:
-        print(extension, ":", count, "file(s)")
+        print(
+            extension,
+            ":",
+            count,
+            "file(s)"
+        )
 
 
 # =========================================================
@@ -771,7 +1069,9 @@ def find_large_files():
     print("\nSearching...")
 
     for root, directories, files in os.walk(folder):
+
         for file in files:
+
             try:
                 file_path = os.path.join(root, file)
                 file_size = os.path.getsize(file_path)
@@ -784,7 +1084,10 @@ def find_large_files():
             except (PermissionError, FileNotFoundError):
                 pass
 
-    large_files.sort(key=lambda item: item[1], reverse=True)
+    large_files.sort(
+        key=lambda item: item[1],
+        reverse=True
+    )
 
     if not large_files:
         print("No large files were found.")
@@ -794,9 +1097,14 @@ def find_large_files():
     print("-----------------------------------------------")
 
     for file_path, file_size in large_files[:20]:
+
         size_mb = file_size / (1024 ** 2)
 
-        print(round(size_mb, 2), "MB -", file_path)
+        print(
+            round(size_mb, 2),
+            "MB -",
+            file_path
+        )
 
     if len(large_files) > 20:
         print("\nShowing the first 20 large files.")
@@ -818,7 +1126,9 @@ def find_duplicate_files():
     files_by_size = {}
 
     for root, directories, files in os.walk(folder):
+
         for file in files:
+
             try:
                 path = os.path.join(root, file)
                 size = os.path.getsize(path)
@@ -834,10 +1144,13 @@ def find_duplicate_files():
     duplicate_groups = 0
 
     for size, files in files_by_size.items():
+
         if len(files) > 1:
+
             duplicate_groups += 1
 
             print("\nPossible duplicate group:")
+
             print(
                 "File Size:",
                 round(size / (1024 ** 2), 2),
@@ -849,9 +1162,16 @@ def find_duplicate_files():
 
     if duplicate_groups == 0:
         print("No possible duplicate files found.")
+
     else:
-        print("\nPossible duplicate groups:", duplicate_groups)
-        print("Files were grouped by size only.")
+        print(
+            "\nPossible duplicate groups:",
+            duplicate_groups
+        )
+
+        print(
+            "Files were grouped by size only."
+        )
 
 
 # =========================================================
@@ -869,7 +1189,9 @@ def check_temp_folder():
     file_count = 0
 
     for root, directories, files in os.walk(temp_folder):
+
         for file in files:
+
             try:
                 file_path = os.path.join(root, file)
 
@@ -880,7 +1202,12 @@ def check_temp_folder():
                 pass
 
     print("Files Found :", file_count)
-    print("Total Size  :", round(total_size / (1024 ** 2), 2), "MB")
+
+    print(
+        "Total Size  :",
+        round(total_size / (1024 ** 2), 2),
+        "MB"
+    )
 
 
 # =========================================================
@@ -895,8 +1222,16 @@ def show_boot_information():
 
     uptime = current_time - boot_time
 
-    print("Last Boot Time :", boot_time.strftime("%Y-%m-%d %H:%M:%S"))
-    print("Current Time   :", current_time.strftime("%Y-%m-%d %H:%M:%S"))
+    print(
+        "Last Boot Time :",
+        boot_time.strftime("%Y-%m-%d %H:%M:%S")
+    )
+
+    print(
+        "Current Time   :",
+        current_time.strftime("%Y-%m-%d %H:%M:%S")
+    )
+
     print("Uptime         :", uptime)
 
 
@@ -911,13 +1246,17 @@ def show_temperature():
         temperatures = psutil.sensors_temperatures()
 
         if not temperatures:
-            print("Temperature information is not available.")
+            print(
+                "Temperature information is not available."
+            )
             return
 
         for name, entries in temperatures.items():
+
             print("\nSensor:", name)
 
             for entry in entries:
+
                 print(
                     "Temperature:",
                     entry.current,
@@ -925,7 +1264,9 @@ def show_temperature():
                 )
 
     except AttributeError:
-        print("Temperature sensors are not supported.")
+        print(
+            "Temperature sensors are not supported."
+        )
 
 
 # =========================================================
@@ -938,22 +1279,34 @@ def disk_space_warning():
     partitions = psutil.disk_partitions()
 
     for partition in partitions:
+
         try:
-            usage = psutil.disk_usage(partition.mountpoint)
+            usage = psutil.disk_usage(
+                partition.mountpoint
+            )
 
             print("\nDrive :", partition.device)
             print("Usage :", usage.percent, "%")
 
             if usage.percent >= 90:
-                print("Warning: Disk is almost full!")
+                print(
+                    "Warning: Disk is almost full!"
+                )
 
             elif usage.percent >= 75:
-                print("Warning: Disk space is getting low.")
+                print(
+                    "Warning: Disk space is getting low."
+                )
 
             else:
-                print("Status: Disk space is okay.")
+                print(
+                    "Status: Disk space is okay."
+                )
 
-        except (PermissionError, FileNotFoundError):
+        except (
+            PermissionError,
+            FileNotFoundError
+        ):
             pass
 
 
@@ -971,14 +1324,20 @@ def show_storage_summary():
     total_free = 0
 
     for partition in partitions:
+
         try:
-            usage = psutil.disk_usage(partition.mountpoint)
+            usage = psutil.disk_usage(
+                partition.mountpoint
+            )
 
             total_storage += usage.total
             total_used += usage.used
             total_free += usage.free
 
-        except (PermissionError, FileNotFoundError):
+        except (
+            PermissionError,
+            FileNotFoundError
+        ):
             pass
 
     print(
@@ -1008,7 +1367,9 @@ def show_gpu_information():
     print("\n---------- GPU INFORMATION ----------")
 
     if platform.system() != "Windows":
-        print("This feature is intended for Windows systems.")
+        print(
+            "This feature is intended for Windows systems."
+        )
         return
 
     try:
@@ -1026,11 +1387,16 @@ def show_gpu_information():
 
         if result.returncode == 0:
             print(result.stdout)
+
         else:
-            print("GPU information could not be retrieved.")
+            print(
+                "GPU information could not be retrieved."
+            )
 
     except FileNotFoundError:
-        print("GPU information command is not available on this system.")
+        print(
+            "GPU information command is not available."
+        )
 
 
 # =========================================================
@@ -1041,7 +1407,9 @@ def show_motherboard_information():
     print("\n---------- MOTHERBOARD INFORMATION ----------")
 
     if platform.system() != "Windows":
-        print("This feature is intended for Windows systems.")
+        print(
+            "This feature is intended for Windows systems."
+        )
         return
 
     try:
@@ -1058,11 +1426,16 @@ def show_motherboard_information():
 
         if result.returncode == 0:
             print(result.stdout)
+
         else:
-            print("Motherboard information could not be retrieved.")
+            print(
+                "Motherboard information could not be retrieved."
+            )
 
     except FileNotFoundError:
-        print("Motherboard information command is not available.")
+        print(
+            "Motherboard information command is not available."
+        )
 
 
 # =========================================================
@@ -1075,6 +1448,40 @@ def show_user_information():
     print("Username       :", getpass.getuser())
     print("Home Directory :", os.path.expanduser("~"))
     print("Computer Name  :", socket.gethostname())
+
+
+# =========================================================
+# USER SESSION INFORMATION
+# =========================================================
+
+def show_session_information():
+    print("\n---------- USER SESSION INFORMATION ----------")
+
+    try:
+        users = psutil.users()
+
+        if not users:
+            print("No user session information available.")
+            return
+
+        print("Active User Sessions:", len(users))
+
+        for user in users:
+            print("\nUsername :", user.name)
+            print("Terminal :", user.terminal)
+            print("Host     :", user.host)
+            print(
+                "Started  :",
+                datetime.fromtimestamp(
+                    user.started
+                ).strftime("%Y-%m-%d %H:%M:%S")
+            )
+
+    except Exception as error:
+        print(
+            "Unable to retrieve user sessions:",
+            error
+        )
 
 
 # =========================================================
@@ -1093,7 +1500,9 @@ def show_environment_variables():
         print(key, "=", value)
 
     if len(variables) > 30:
-        print("\nShowing the first 30 environment variables.")
+        print(
+            "\nShowing the first 30 environment variables."
+        )
 
 
 # =========================================================
@@ -1108,13 +1517,27 @@ def test_internet_connection():
     try:
         start_time = datetime.now()
 
-        socket.create_connection((host, 80), timeout=5)
+        socket.create_connection(
+            (host, 80),
+            timeout=5
+        )
 
         end_time = datetime.now()
-        response_time = (end_time - start_time).total_seconds()
 
-        print("Connection Status :", "Connected")
-        print("Test Server       :", host)
+        response_time = (
+            end_time - start_time
+        ).total_seconds()
+
+        print(
+            "Connection Status :",
+            "Connected"
+        )
+
+        print(
+            "Test Server       :",
+            host
+        )
+
         print(
             "Response Time     :",
             round(response_time * 1000, 2),
@@ -1122,7 +1545,9 @@ def test_internet_connection():
         )
 
     except OSError:
-        print("Connection Status : No Internet Connection")
+        print(
+            "Connection Status : No Internet Connection"
+        )
 
 
 # =========================================================
@@ -1132,17 +1557,31 @@ def test_internet_connection():
 def ping_test():
     print("\n---------- PING TEST ----------")
 
-    host = input("Enter website or IP address: ")
+    host = input(
+        "Enter website or IP address: "
+    )
 
     if not host:
         print("No address entered.")
         return
 
     try:
+
         if platform.system() == "Windows":
-            command = ["ping", "-n", "4", host]
+            command = [
+                "ping",
+                "-n",
+                "4",
+                host
+            ]
+
         else:
-            command = ["ping", "-c", "4", host]
+            command = [
+                "ping",
+                "-c",
+                "4",
+                host
+            ]
 
         result = subprocess.run(
             command,
@@ -1153,7 +1592,10 @@ def ping_test():
         print(result.stdout)
 
     except Exception as error:
-        print("Ping failed:", error)
+        print(
+            "Ping failed:",
+            error
+        )
 
 
 # =========================================================
@@ -1167,10 +1609,17 @@ def show_mac_address():
 
     mac_address = ":".join(
         f"{(mac >> element) & 0xff:02x}"
-        for element in range(40, -1, -8)
+        for element in range(
+            40,
+            -1,
+            -8
+        )
     )
 
-    print("MAC Address :", mac_address.upper())
+    print(
+        "MAC Address :",
+        mac_address.upper()
+    )
 
 
 # =========================================================
@@ -1180,14 +1629,45 @@ def show_mac_address():
 def show_architecture_details():
     print("\n---------- SYSTEM ARCHITECTURE ----------")
 
-    print("Operating System :", platform.system())
-    print("OS Release       :", platform.release())
-    print("OS Version       :", platform.version())
-    print("Machine Type     :", platform.machine())
-    print("Processor        :", platform.processor())
-    print("Architecture     :", platform.architecture()[0])
-    print("Platform         :", platform.platform())
-    print("Python Version   :", platform.python_version())
+    print(
+        "Operating System :",
+        platform.system()
+    )
+
+    print(
+        "OS Release       :",
+        platform.release()
+    )
+
+    print(
+        "OS Version       :",
+        platform.version()
+    )
+
+    print(
+        "Machine Type     :",
+        platform.machine()
+    )
+
+    print(
+        "Processor        :",
+        platform.processor()
+    )
+
+    print(
+        "Architecture     :",
+        platform.architecture()[0]
+    )
+
+    print(
+        "Platform         :",
+        platform.platform()
+    )
+
+    print(
+        "Python Version   :",
+        platform.python_version()
+    )
 
 
 # =========================================================
@@ -1198,36 +1678,54 @@ def show_windows_services():
     print("\n---------- WINDOWS SERVICES ----------")
 
     if platform.system() != "Windows":
-        print("This feature is intended for Windows systems.")
+        print(
+            "This feature is intended for Windows systems."
+        )
         return
 
     try:
         result = subprocess.run(
-            ["sc", "query", "type=", "service"],
+            [
+                "sc",
+                "query",
+                "type=",
+                "service"
+            ],
             capture_output=True,
             text=True
         )
 
         if result.returncode == 0:
+
             lines = result.stdout.splitlines()
 
             count = 0
 
             for line in lines:
+
                 if "SERVICE_NAME:" in line:
+
                     print(line.strip())
+
                     count += 1
 
                     if count >= 30:
                         break
 
-            print("\nShowing up to 30 Windows services.")
+            print(
+                "\nShowing up to 30 Windows services."
+            )
 
         else:
-            print("Unable to retrieve Windows services.")
+            print(
+                "Unable to retrieve Windows services."
+            )
 
     except Exception as error:
-        print("Service check failed:", error)
+        print(
+            "Service check failed:",
+            error
+        )
 
 
 # =========================================================
@@ -1238,7 +1736,9 @@ def show_startup_programs():
     print("\n---------- STARTUP PROGRAMS ----------")
 
     if platform.system() != "Windows":
-        print("This feature is intended for Windows systems.")
+        print(
+            "This feature is intended for Windows systems."
+        )
         return
 
     startup_paths = [
@@ -1253,15 +1753,24 @@ def show_startup_programs():
     found = False
 
     for folder in startup_paths:
+
         if os.path.isdir(folder):
-            print("\nStartup Folder:", folder)
+
+            print(
+                "\nStartup Folder:",
+                folder
+            )
 
             for item in os.listdir(folder):
+
                 print("-", item)
+
                 found = True
 
     if not found:
-        print("No startup files were found in the startup folders.")
+        print(
+            "No startup files were found."
+        )
 
 
 # =========================================================
@@ -1275,7 +1784,9 @@ def quick_diagnostic_scan():
 
     cpu = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()
-    disk = psutil.disk_usage(os.path.abspath(os.sep))
+    disk = psutil.disk_usage(
+        os.path.abspath(os.sep)
+    )
 
     print("\nCPU Usage :", cpu, "%")
     print("RAM Usage :", memory.percent, "%")
@@ -1286,38 +1797,68 @@ def quick_diagnostic_scan():
     issues = 0
 
     if cpu >= 90:
-        print("[WARNING] CPU usage is very high.")
+        print(
+            "[WARNING] CPU usage is very high."
+        )
         issues += 1
+
     else:
-        print("[OK] CPU usage is normal.")
+        print(
+            "[OK] CPU usage is normal."
+        )
 
     if memory.percent >= 90:
-        print("[WARNING] RAM usage is very high.")
+        print(
+            "[WARNING] RAM usage is very high."
+        )
         issues += 1
+
     else:
-        print("[OK] RAM usage is normal.")
+        print(
+            "[OK] RAM usage is normal."
+        )
 
     if disk.percent >= 90:
-        print("[WARNING] Disk space is almost full.")
+        print(
+            "[WARNING] Disk space is almost full."
+        )
         issues += 1
+
     else:
-        print("[OK] Disk space is sufficient.")
+        print(
+            "[OK] Disk space is sufficient."
+        )
 
     battery = psutil.sensors_battery()
 
     if battery:
-        if battery.percent <= 20 and not battery.power_plugged:
-            print("[WARNING] Battery level is low.")
+
+        if (
+            battery.percent <= 20
+            and not battery.power_plugged
+        ):
+            print(
+                "[WARNING] Battery level is low."
+            )
             issues += 1
+
         else:
-            print("[OK] Battery level is acceptable.")
+            print(
+                "[OK] Battery level is acceptable."
+            )
 
     print("\n----------------------------------------")
 
     if issues == 0:
-        print("No major problems detected.")
+        print(
+            "No major problems detected."
+        )
+
     else:
-        print("Potential issues detected:", issues)
+        print(
+            "Potential issues detected:",
+            issues
+        )
 
     print("Quick scan complete.")
 
@@ -1327,55 +1868,89 @@ def quick_diagnostic_scan():
 # =========================================================
 
 def diagnostic_checklist():
-    print("\n---------- DIAGNOSTIC CHECKLIST ----------")
+    print(
+        "\n---------- DIAGNOSTIC CHECKLIST ----------"
+    )
 
     issues = 0
 
     cpu = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()
-    disk = psutil.disk_usage(os.path.abspath(os.sep))
+    disk = psutil.disk_usage(
+        os.path.abspath(os.sep)
+    )
 
     print("\nChecking CPU...")
 
     if cpu >= 90:
-        print("[WARNING] CPU usage is very high.")
+        print(
+            "[WARNING] CPU usage is very high."
+        )
         issues += 1
+
     else:
-        print("[OK] CPU usage is acceptable.")
+        print(
+            "[OK] CPU usage is acceptable."
+        )
 
     print("\nChecking RAM...")
 
     if memory.percent >= 90:
-        print("[WARNING] RAM usage is very high.")
+        print(
+            "[WARNING] RAM usage is very high."
+        )
         issues += 1
+
     else:
-        print("[OK] RAM usage is acceptable.")
+        print(
+            "[OK] RAM usage is acceptable."
+        )
 
     print("\nChecking Disk...")
 
     if disk.percent >= 90:
-        print("[WARNING] Disk space is almost full.")
+        print(
+            "[WARNING] Disk space is almost full."
+        )
         issues += 1
+
     else:
-        print("[OK] Disk space is acceptable.")
+        print(
+            "[OK] Disk space is acceptable."
+        )
 
     print("\nChecking Battery...")
 
     battery = psutil.sensors_battery()
 
     if battery:
-        if battery.percent <= 20 and not battery.power_plugged:
-            print("[WARNING] Battery level is low.")
+
+        if (
+            battery.percent <= 20
+            and not battery.power_plugged
+        ):
+            print(
+                "[WARNING] Battery level is low."
+            )
             issues += 1
+
         else:
-            print("[OK] Battery level is acceptable.")
+            print(
+                "[OK] Battery level is acceptable."
+            )
+
     else:
-        print("[INFO] Battery information unavailable.")
+        print(
+            "[INFO] Battery information unavailable."
+        )
 
     print("\n========================================")
 
     if issues == 0:
-        print("Diagnostic Checklist: No major issues found.")
+        print(
+            "Diagnostic Checklist: No major issues found."
+        )
+
     else:
         print(
             "Diagnostic Checklist:",
@@ -1391,23 +1966,41 @@ def diagnostic_checklist():
 # =========================================================
 
 def resource_monitor():
-    print("\n---------- SYSTEM RESOURCE MONITOR ----------")
-    print("Press CTRL+C to stop the monitor.")
+    print(
+        "\n---------- SYSTEM RESOURCE MONITOR ----------"
+    )
+
+    print(
+        "Press CTRL+C to stop the monitor."
+    )
 
     try:
+
         while True:
-            cpu = psutil.cpu_percent(interval=1)
+
+            cpu = psutil.cpu_percent(
+                interval=1
+            )
+
             memory = psutil.virtual_memory()
+
+            disk = psutil.disk_usage(
+                os.path.abspath(os.sep)
+            )
 
             print(
                 "CPU:",
                 str(cpu) + "%",
                 "| RAM:",
-                str(memory.percent) + "%"
+                str(memory.percent) + "%",
+                "| Disk:",
+                str(disk.percent) + "%"
             )
 
     except KeyboardInterrupt:
-        print("\nResource monitor stopped.")
+        print(
+            "\nResource monitor stopped."
+        )
 
 
 # =========================================================
@@ -1420,20 +2013,121 @@ def show_system_summary():
     print("========================================")
 
     memory = psutil.virtual_memory()
-    disk = psutil.disk_usage(os.path.abspath(os.sep))
 
-    print("Computer Name :", socket.gethostname())
-    print("Operating System:", platform.system())
-    print("OS Version     :", platform.version())
-    print("Processor      :", platform.processor())
-    print("CPU Cores      :", psutil.cpu_count(logical=False))
-    print("Logical CPUs   :", psutil.cpu_count(logical=True))
-    print("CPU Usage      :", psutil.cpu_percent(interval=1), "%")
-    print("Total RAM      :", round(memory.total / (1024 ** 3), 2), "GB")
-    print("RAM Usage      :", memory.percent, "%")
-    print("System Disk    :", round(disk.total / (1024 ** 3), 2), "GB")
-    print("Disk Usage     :", disk.percent, "%")
-    print("Python Version :", platform.python_version())
+    disk = psutil.disk_usage(
+        os.path.abspath(os.sep)
+    )
+
+    print(
+        "Computer Name :",
+        socket.gethostname()
+    )
+
+    print(
+        "Operating System:",
+        platform.system()
+    )
+
+    print(
+        "OS Version     :",
+        platform.version()
+    )
+
+    print(
+        "Processor      :",
+        platform.processor()
+    )
+
+    print(
+        "CPU Cores      :",
+        psutil.cpu_count(logical=False)
+    )
+
+    print(
+        "Logical CPUs   :",
+        psutil.cpu_count(logical=True)
+    )
+
+    print(
+        "CPU Usage      :",
+        psutil.cpu_percent(interval=1),
+        "%"
+    )
+
+    print(
+        "Total RAM      :",
+        round(memory.total / (1024 ** 3), 2),
+        "GB"
+    )
+
+    print(
+        "RAM Usage      :",
+        memory.percent,
+        "%"
+    )
+
+    print(
+        "System Disk    :",
+        round(disk.total / (1024 ** 3), 2),
+        "GB"
+    )
+
+    print(
+        "Disk Usage     :",
+        disk.percent,
+        "%"
+    )
+
+    print(
+        "Python Version :",
+        platform.python_version()
+    )
+
+
+# =========================================================
+# SYSTEM RESOURCE SNAPSHOT
+# =========================================================
+
+def system_resource_snapshot():
+    print("\n---------- RESOURCE SNAPSHOT ----------")
+
+    cpu = psutil.cpu_percent(interval=1)
+    memory = psutil.virtual_memory()
+    swap = psutil.swap_memory()
+    disk = psutil.disk_usage(
+        os.path.abspath(os.sep)
+    )
+    network = psutil.net_io_counters()
+
+    print("\nCPU")
+    print("Usage :", cpu, "%")
+
+    print("\nRAM")
+    print("Usage :", memory.percent, "%")
+    print(
+        "Used  :",
+        round(memory.used / (1024 ** 3), 2),
+        "GB"
+    )
+
+    print("\nSwap")
+    print("Usage :", swap.percent, "%")
+
+    print("\nDisk")
+    print("Usage :", disk.percent, "%")
+
+    print("\nNetwork")
+    print(
+        "Sent :",
+        round(network.bytes_sent / (1024 ** 3), 2),
+        "GB"
+    )
+
+    print(
+        "Recv :",
+        round(network.bytes_recv / (1024 ** 3), 2),
+        "GB"
+    )
 
 
 # =========================================================
@@ -1441,62 +2135,246 @@ def show_system_summary():
 # =========================================================
 
 def save_diagnostic_report():
-    print("\n---------- SAVE DIAGNOSTIC REPORT ----------")
+    print(
+        "\n---------- SAVE DIAGNOSTIC REPORT ----------"
+    )
 
     filename = "diagnostic_report.txt"
 
     cpu = psutil.cpu_percent(interval=1)
     memory = psutil.virtual_memory()
-    disk = psutil.disk_usage(os.path.abspath(os.sep))
+    disk = psutil.disk_usage(
+        os.path.abspath(os.sep)
+    )
+
+    network = psutil.net_io_counters()
 
     report = []
 
-    report.append("========================================")
-    report.append("       PC DIAGNOSTIC REPORT")
-    report.append("========================================")
+    report.append(
+        "========================================"
+    )
+
+    report.append(
+        "       PC DIAGNOSTIC REPORT"
+    )
+
+    report.append(
+        "========================================"
+    )
+
     report.append("")
-    report.append("System Information")
-    report.append("------------------")
+
     report.append(
-        "Operating System : " + platform.system()
+        "System Information"
     )
+
     report.append(
-        "System Version   : " + platform.version()
+        "------------------"
     )
+
     report.append(
-        "Computer Name    : " + socket.gethostname()
+        "Operating System : "
+        + platform.system()
     )
+
     report.append(
-        "Architecture     : " + platform.architecture()[0]
+        "System Version   : "
+        + platform.version()
     )
+
     report.append(
-        "Processor        : " + platform.processor()
+        "Computer Name    : "
+        + socket.gethostname()
     )
+
+    report.append(
+        "Architecture     : "
+        + platform.architecture()[0]
+    )
+
+    report.append(
+        "Processor        : "
+        + platform.processor()
+    )
+
     report.append("")
-    report.append("Performance")
-    report.append("-----------")
-    report.append("CPU Usage  : " + str(cpu) + "%")
-    report.append("RAM Usage  : " + str(memory.percent) + "%")
-    report.append("Disk Usage : " + str(disk.percent) + "%")
-    report.append("")
+
     report.append(
-        "Python Version : " + platform.python_version()
+        "CPU Information"
     )
+
     report.append(
-        "Username       : " + getpass.getuser()
+        "---------------"
     )
+
+    report.append(
+        "CPU Usage        : "
+        + str(cpu)
+        + "%"
+    )
+
+    report.append(
+        "CPU Cores        : "
+        + str(psutil.cpu_count(logical=False))
+    )
+
+    report.append(
+        "Logical CPUs     : "
+        + str(psutil.cpu_count(logical=True))
+    )
+
     report.append("")
+
+    report.append(
+        "Memory Information"
+    )
+
+    report.append(
+        "------------------"
+    )
+
+    report.append(
+        "Total RAM        : "
+        + str(
+            round(
+                memory.total / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append(
+        "Used RAM         : "
+        + str(
+            round(
+                memory.used / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append(
+        "RAM Usage        : "
+        + str(memory.percent)
+        + "%"
+    )
+
+    report.append("")
+
+    report.append(
+        "Storage Information"
+    )
+
+    report.append(
+        "-------------------"
+    )
+
+    report.append(
+        "Disk Usage       : "
+        + str(disk.percent)
+        + "%"
+    )
+
+    report.append(
+        "Total Disk       : "
+        + str(
+            round(
+                disk.total / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append(
+        "Free Disk        : "
+        + str(
+            round(
+                disk.free / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append("")
+
+    report.append(
+        "Network Information"
+    )
+
+    report.append(
+        "-------------------"
+    )
+
+    report.append(
+        "Data Sent        : "
+        + str(
+            round(
+                network.bytes_sent / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append(
+        "Data Received    : "
+        + str(
+            round(
+                network.bytes_recv / (1024 ** 3),
+                2
+            )
+        )
+        + " GB"
+    )
+
+    report.append("")
+
+    report.append(
+        "Python Version : "
+        + platform.python_version()
+    )
+
+    report.append(
+        "Username       : "
+        + getpass.getuser()
+    )
+
     report.append(
         "Report Created : "
-        + datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        + datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
     )
-    report.append("========================================")
 
-    with open(filename, "w") as file:
-        for line in report:
-            file.write(line + "\n")
+    report.append(
+        "========================================"
+    )
 
-    print("Diagnostic report saved as:", filename)
+    try:
+
+        with open(
+            filename,
+            "w"
+        ) as file:
+
+            for line in report:
+                file.write(line + "\n")
+
+        print(
+            "Diagnostic report saved as:",
+            filename
+        )
+
+    except PermissionError:
+        print(
+            "Permission denied. "
+            "Unable to save the report."
+        )
 
 
 # =========================================================
@@ -1505,15 +2383,42 @@ def save_diagnostic_report():
 
 def show_help():
     print("\n---------- HELP ----------")
+
     print("PC Diagnostic Tool")
     print()
-    print("Use the menu numbers to select a diagnostic function.")
-    print("The tool checks basic hardware, software,")
-    print("network, storage, and system information.")
+
+    print(
+        "Use the menu numbers to select "
+        "a diagnostic function."
+    )
+
     print()
-    print("Some functions may require administrator access.")
-    print("Some hardware information may not be available")
-    print("depending on your computer.")
+
+    print(
+        "The tool checks hardware, software,"
+    )
+
+    print(
+        "network, storage, processes, and"
+    )
+
+    print(
+        "system performance."
+    )
+
+    print()
+
+    print(
+        "Some functions may require administrator access."
+    )
+
+    print(
+        "Some hardware information may not be available"
+    )
+
+    print(
+        "depending on your computer."
+    )
 
 
 # =========================================================
@@ -1524,13 +2429,28 @@ def show_about():
     print("\n========================================")
     print("          ABOUT PC DIAGNOSTIC TOOL")
     print("========================================")
-    print("A beginner-friendly Python PC diagnostic program.")
+
+    print(
+        "A beginner-friendly Python PC diagnostic program."
+    )
+
     print()
-    print("Created using Python and psutil.")
-    print("Purpose: Practice functions, loops, conditions,")
-    print("user input, system information, and file handling.")
+
+    print(
+        "Created using Python and psutil."
+    )
+
+    print(
+        "Purpose: Practice functions, loops, conditions,"
+    )
+
+    print(
+        "user input, system information, and file handling."
+    )
+
     print()
-    print("Version: 3.0")
+
+    print("Version: 4.0")
 
 
 # =========================================================
@@ -1552,6 +2472,8 @@ def full_diagnostic_report():
     health_check()
     show_performance_summary()
     calculate_health_score()
+    process_count_summary()
+    show_network_traffic()
 
     print("\n========================================")
     print("       DIAGNOSTIC COMPLETE")
@@ -1563,8 +2485,10 @@ def full_diagnostic_report():
 # =========================================================
 
 def clear_screen():
+
     if os.name == "nt":
         os.system("cls")
+
     else:
         os.system("clear")
 
@@ -1574,66 +2498,98 @@ def clear_screen():
 # =========================================================
 
 def show_menu():
+
     print("\n========================================")
     print("          PC DIAGNOSTIC TOOL")
     print("========================================")
 
+    print("\n--- SYSTEM ---")
     print("1.  System Information")
-    print("2.  CPU Information")
-    print("3.  RAM Information")
-    print("4.  Disk Information")
-    print("5.  Network Information")
-    print("6.  Battery Information")
-    print("7.  System Uptime")
-    print("8.  System Health Check")
-    print("9.  Full Diagnostic Report")
-    print("10. Running Processes")
-    print("11. Top CPU Processes")
-    print("12. Top RAM Processes")
-    print("13. Network Connections")
-    print("14. Python Information")
-    print("15. Performance Summary")
-    print("16. System Health Score")
-    print("17. Folder Size Checker")
-    print("18. Save Diagnostic Report")
-    print("19. GPU Information")
-    print("20. Motherboard Information")
-    print("21. User Information")
-    print("22. Environment Variables")
-    print("23. Internet Connection Test")
-    print("24. Ping Test")
-    print("25. MAC Address")
-    print("26. Storage Summary")
-    print("27. Large File Finder")
-    print("28. Temporary File Checker")
-    print("29. Boot Information")
-    print("30. System Temperature")
-    print("31. Disk Space Warning")
-    print("32. Quick Diagnostic Scan")
-    print("33. System Summary")
-    print("34. Help")
-    print("35. About")
+    print("2.  System Architecture Details")
+    print("3.  System Summary")
+    print("4.  Current Date and Time")
+    print("5.  Boot Information")
+    print("6.  System Uptime")
 
-    print("36. CPU Load Per Core")
-    print("37. Virtual Memory / Swap")
-    print("38. Disk Activity")
-    print("39. Network Interface Details")
-    print("40. Hostname and DNS Information")
-    print("41. Windows Services")
-    print("42. Startup Programs")
-    print("43. System Architecture Details")
-    print("44. Python Package Check")
-    print("45. Folder File Counter")
-    print("46. File Extension Analyzer")
-    print("47. Duplicate File Finder")
-    print("48. Detailed Battery Health")
-    print("49. Diagnostic Checklist")
-    print("50. System Resource Monitor")
-    print("51. Process Search")
-    print("52. Process Termination")
-    print("53. Clear Screen")
+    print("\n--- CPU AND MEMORY ---")
+    print("7.  CPU Information")
+    print("8.  CPU Load Per Core")
+    print("9.  CPU Load Average")
+    print("10. RAM Information")
+    print("11. Detailed RAM Information")
+    print("12. Virtual Memory / Swap")
+    print("13. System Temperature")
 
-    print("0.  Exit")
+    print("\n--- STORAGE ---")
+    print("14. Disk Information")
+    print("15. Disk Activity")
+    print("16. Disk Speed Snapshot")
+    print("17. Storage Summary")
+    print("18. Disk Space Warning")
+    print("19. Folder Size Checker")
+    print("20. Folder File Counter")
+    print("21. Large File Finder")
+    print("22. File Extension Analyzer")
+    print("23. Duplicate File Finder")
+    print("24. Temporary File Checker")
+
+    print("\n--- NETWORK ---")
+    print("25. Network Information")
+    print("26. Network Interface Details")
+    print("27. Network Traffic")
+    print("28. Network Speed Snapshot")
+    print("29. Network Packet Statistics")
+    print("30. Network Connections")
+    print("31. Hostname and DNS Information")
+    print("32. Internet Connection Test")
+    print("33. Ping Test")
+    print("34. MAC Address")
+
+    print("\n--- BATTERY ---")
+    print("35. Battery Information")
+    print("36. Detailed Battery Health")
+
+    print("\n--- PROCESSES ---")
+    print("37. Running Processes")
+    print("38. Process Count Summary")
+    print("39. Top CPU Processes")
+    print("40. Top RAM Processes")
+    print("41. Process Search")
+    print("42. Process Termination")
+
+    print("\n--- WINDOWS ---")
+    print("43. GPU Information")
+    print("44. Motherboard Information")
+    print("45. Windows Services")
+    print("46. Startup Programs")
+
+    print("\n--- PYTHON ---")
+    print("47. Python Information")
+    print("48. Python Package Check")
+
+    print("\n--- USER ---")
+    print("49. User Information")
+    print("50. User Session Information")
+    print("51. Environment Variables")
+
+    print("\n--- DIAGNOSTICS ---")
+    print("52. Health Check")
+    print("53. Performance Summary")
+    print("54. System Health Score")
+    print("55. Quick Diagnostic Scan")
+    print("56. Diagnostic Checklist")
+    print("57. System Resource Snapshot")
+    print("58. System Resource Monitor")
+    print("59. Full Diagnostic Report")
+    print("60. Save Diagnostic Report")
+
+    print("\n--- OTHER ---")
+    print("61. Help")
+    print("62. About")
+    print("63. Clear Screen")
+
+    print("\n0.  Exit")
+
     print("========================================")
 
 
@@ -1647,175 +2603,210 @@ def main():
 
         show_menu()
 
-        choice = input("Enter your choice: ")
+        choice = input(
+            "Enter your choice: "
+        ).strip()
 
         if choice == "1":
             show_system_information()
 
         elif choice == "2":
-            show_cpu_information()
-
-        elif choice == "3":
-            show_ram_information()
-
-        elif choice == "4":
-            show_disk_information()
-
-        elif choice == "5":
-            show_network_information()
-
-        elif choice == "6":
-            show_battery_information()
-
-        elif choice == "7":
-            show_uptime()
-
-        elif choice == "8":
-            health_check()
-
-        elif choice == "9":
-            full_diagnostic_report()
-
-        elif choice == "10":
-            show_running_processes()
-
-        elif choice == "11":
-            show_top_cpu_processes()
-
-        elif choice == "12":
-            show_top_ram_processes()
-
-        elif choice == "13":
-            show_network_connections()
-
-        elif choice == "14":
-            show_python_information()
-
-        elif choice == "15":
-            show_performance_summary()
-
-        elif choice == "16":
-            calculate_health_score()
-
-        elif choice == "17":
-            check_folder_size()
-
-        elif choice == "18":
-            save_diagnostic_report()
-
-        elif choice == "19":
-            show_gpu_information()
-
-        elif choice == "20":
-            show_motherboard_information()
-
-        elif choice == "21":
-            show_user_information()
-
-        elif choice == "22":
-            show_environment_variables()
-
-        elif choice == "23":
-            test_internet_connection()
-
-        elif choice == "24":
-            ping_test()
-
-        elif choice == "25":
-            show_mac_address()
-
-        elif choice == "26":
-            show_storage_summary()
-
-        elif choice == "27":
-            find_large_files()
-
-        elif choice == "28":
-            check_temp_folder()
-
-        elif choice == "29":
-            show_boot_information()
-
-        elif choice == "30":
-            show_temperature()
-
-        elif choice == "31":
-            disk_space_warning()
-
-        elif choice == "32":
-            quick_diagnostic_scan()
-
-        elif choice == "33":
-            show_system_summary()
-
-        elif choice == "34":
-            show_help()
-
-        elif choice == "35":
-            show_about()
-
-        elif choice == "36":
-            show_cpu_per_core()
-
-        elif choice == "37":
-            show_virtual_memory()
-
-        elif choice == "38":
-            show_disk_activity()
-
-        elif choice == "39":
-            show_network_interfaces()
-
-        elif choice == "40":
-            show_hostname_dns()
-
-        elif choice == "41":
-            show_windows_services()
-
-        elif choice == "42":
-            show_startup_programs()
-
-        elif choice == "43":
             show_architecture_details()
 
-        elif choice == "44":
-            check_python_packages()
+        elif choice == "3":
+            show_system_summary()
 
-        elif choice == "45":
+        elif choice == "4":
+            show_current_datetime()
+
+        elif choice == "5":
+            show_boot_information()
+
+        elif choice == "6":
+            show_uptime()
+
+        elif choice == "7":
+            show_cpu_information()
+
+        elif choice == "8":
+            show_cpu_per_core()
+
+        elif choice == "9":
+            show_cpu_load_average()
+
+        elif choice == "10":
+            show_ram_information()
+
+        elif choice == "11":
+            show_detailed_ram()
+
+        elif choice == "12":
+            show_virtual_memory()
+
+        elif choice == "13":
+            show_temperature()
+
+        elif choice == "14":
+            show_disk_information()
+
+        elif choice == "15":
+            show_disk_activity()
+
+        elif choice == "16":
+            disk_speed_snapshot()
+
+        elif choice == "17":
+            show_storage_summary()
+
+        elif choice == "18":
+            disk_space_warning()
+
+        elif choice == "19":
+            check_folder_size()
+
+        elif choice == "20":
             count_folder_files()
 
-        elif choice == "46":
+        elif choice == "21":
+            find_large_files()
+
+        elif choice == "22":
             analyze_file_extensions()
 
-        elif choice == "47":
+        elif choice == "23":
             find_duplicate_files()
 
-        elif choice == "48":
+        elif choice == "24":
+            check_temp_folder()
+
+        elif choice == "25":
+            show_network_information()
+
+        elif choice == "26":
+            show_network_interfaces()
+
+        elif choice == "27":
+            show_network_traffic()
+
+        elif choice == "28":
+            network_speed_snapshot()
+
+        elif choice == "29":
+            show_network_packets()
+
+        elif choice == "30":
+            show_network_connections()
+
+        elif choice == "31":
+            show_hostname_dns()
+
+        elif choice == "32":
+            test_internet_connection()
+
+        elif choice == "33":
+            ping_test()
+
+        elif choice == "34":
+            show_mac_address()
+
+        elif choice == "35":
+            show_battery_information()
+
+        elif choice == "36":
             detailed_battery_health()
 
-        elif choice == "49":
-            diagnostic_checklist()
+        elif choice == "37":
+            show_running_processes()
 
-        elif choice == "50":
-            resource_monitor()
+        elif choice == "38":
+            process_count_summary()
 
-        elif choice == "51":
+        elif choice == "39":
+            show_top_cpu_processes()
+
+        elif choice == "40":
+            show_top_ram_processes()
+
+        elif choice == "41":
             search_process()
 
-        elif choice == "52":
+        elif choice == "42":
             terminate_process()
 
+        elif choice == "43":
+            show_gpu_information()
+
+        elif choice == "44":
+            show_motherboard_information()
+
+        elif choice == "45":
+            show_windows_services()
+
+        elif choice == "46":
+            show_startup_programs()
+
+        elif choice == "47":
+            show_python_information()
+
+        elif choice == "48":
+            check_python_packages()
+
+        elif choice == "49":
+            show_user_information()
+
+        elif choice == "50":
+            show_session_information()
+
+        elif choice == "51":
+            show_environment_variables()
+
+        elif choice == "52":
+            health_check()
+
         elif choice == "53":
+            show_performance_summary()
+
+        elif choice == "54":
+            calculate_health_score()
+
+        elif choice == "55":
+            quick_diagnostic_scan()
+
+        elif choice == "56":
+            diagnostic_checklist()
+
+        elif choice == "57":
+            system_resource_snapshot()
+
+        elif choice == "58":
+            resource_monitor()
+
+        elif choice == "59":
+            full_diagnostic_report()
+
+        elif choice == "60":
+            save_diagnostic_report()
+
+        elif choice == "61":
+            show_help()
+
+        elif choice == "62":
+            show_about()
+
+        elif choice == "63":
             clear_screen()
 
         elif choice == "0":
-            print("\nThank you for using PC Diagnostic Tool!")
+            print(
+                "\nThank you for using "
+                "PC Diagnostic Tool!"
+            )
             break
 
         else:
             print(
-                "\nInvalid choice. "
-                "Please select a number from 0 to 53."
+                "\nInvalid choice."
+                " Please select a number from 0 to 63."
             )
 
 
@@ -1823,4 +2814,5 @@ def main():
 # START PROGRAM
 # =========================================================
 
-main()
+if __name__ == "__main__":
+    main()
