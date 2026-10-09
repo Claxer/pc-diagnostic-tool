@@ -245,74 +245,184 @@ The program can clear the terminal screen.
 
 ---
 
+### Resource History Logger
+
+The tool can record CPU, RAM, and system-drive usage over a selected period and save the measurements to a CSV file.
+
+* Lets the user choose a recording duration from 5 to 300 seconds
+* Records a timestamp for each sample
+* Tracks CPU, RAM, and disk usage percentages
+* Displays measurements while recording
+* Supports stopping the recording early with `CTRL+C`
+* Saves the results to `resource_history.csv` for later review
+
+### Process Details by PID
+
+The program can show detailed information about a selected running process.
+
+* Accepts a process ID (PID)
+* Displays process name and status
+* Shows the executable path and parent PID
+* Displays the process creation time
+* Shows CPU usage, memory usage, and memory percentage
+* Reports the number of threads when available
+* Handles invalid PIDs, closed processes, and permission errors
+
+### Search Files by Name
+
+The tool can search a selected folder and its subfolders for files by name.
+
+* Searches using a full or partial file name
+* Ignores uppercase and lowercase differences in the search term
+* Displays the matching file paths
+* Checks that the selected folder exists before searching
+* Limits the displayed results to 200 matches to keep output manageable
+
+### Recent Windows Event Logs
+
+On Windows, the program can display recent events from the System event log.
+
+* Lets the user choose between 1 and 30 recent events
+* Displays event time, event ID, level, source, and message
+* Uses PowerShell to retrieve event information
+* Handles unavailable PowerShell commands, timeouts, and access errors
+* Shows a message if used on a non-Windows operating system
+
+### Installed Applications List
+
+On Windows, the program can list applications registered in common Windows uninstall registry locations.
+
+* Displays application names
+* Displays version information when available
+* Checks system-wide and current-user registry locations
+* Removes duplicate name/version entries from the results
+* Sorts the application list by name
+* Skips entries that cannot be accessed
+
+### Export System Snapshot
+
+The program can export a timestamped text file containing a snapshot of important system information.
+
+* Includes operating system, computer name, architecture, processor, and Python version
+* Includes CPU core counts, usage, and frequency when available
+* Includes RAM and swap usage
+* Includes system-drive capacity and usage
+* Includes network data sent and received
+* Includes battery level and power connection status when available
+* Creates a file named like `system_snapshot_YYYYMMDD_HHMMSS.txt`
+
+> The Windows Event Logs and Installed Applications features are intended for Windows. Some information may be unavailable depending on the operating system, hardware, permissions, or system configuration.
+
+---
+
 # Updated Menu
 
-The current version contains **53 diagnostic functions** plus the exit option.
+The current version contains **69 numbered tools**, plus the exit option. Some tools are operating-system-specific, as noted in their descriptions.
 
 ```text
 ========================================
           PC DIAGNOSTIC TOOL
 ========================================
+
+--- SYSTEM ---
 1.  System Information
-2.  CPU Information
-3.  RAM Information
-4.  Disk Information
-5.  Network Information
-6.  Battery Information
-7.  System Uptime
-8.  System Health Check
-9.  Full Diagnostic Report
-10. Running Processes
-11. Top CPU Processes
-12. Top RAM Processes
-13. Network Connections
-14. Python Information
-15. Performance Summary
-16. System Health Score
-17. Folder Size Checker
-18. Save Diagnostic Report
-19. GPU Information
-20. Motherboard Information
-21. User Information
-22. Environment Variables
-23. Internet Connection Test
-24. Ping Test
-25. MAC Address
-26. Storage Summary
-27. Large File Finder
-28. Temporary File Checker
-29. Boot Information
-30. System Temperature
-31. Disk Space Warning
-32. Quick Diagnostic Scan
-33. System Summary
-34. Help
-35. About
-36. CPU Load Per Core
-37. Virtual Memory / Swap
-38. Disk Activity
-39. Network Interface Details
-40. Hostname and DNS Information
-41. Windows Services
-42. Startup Programs
-43. System Architecture Details
-44. Python Package Check
-45. Folder File Counter
-46. File Extension Analyzer
-47. Duplicate File Finder
-48. Detailed Battery Health
-49. Diagnostic Checklist
-50. System Resource Monitor
-51. Process Search
-52. Process Termination
-53. Clear Screen
+2.  System Architecture Details
+3.  System Summary
+4.  Current Date and Time
+5.  Boot Information
+6.  System Uptime
+
+--- CPU AND MEMORY ---
+7.  CPU Information
+8.  CPU Load Per Core
+9.  CPU Load Average
+10. RAM Information
+11. Detailed RAM Information
+12. Virtual Memory / Swap
+13. System Temperature
+
+--- STORAGE ---
+14. Disk Information
+15. Disk Activity
+16. Disk Speed Snapshot
+17. Storage Summary
+18. Disk Space Warning
+19. Folder Size Checker
+20. Folder File Counter
+21. Large File Finder
+22. File Extension Analyzer
+23. Duplicate File Finder
+24. Temporary File Checker
+
+--- NETWORK ---
+25. Network Information
+26. Network Interface Details
+27. Network Traffic
+28. Network Speed Snapshot
+29. Network Packet Statistics
+30. Network Connections
+31. Hostname and DNS Information
+32. Internet Connection Test
+33. Ping Test
+34. MAC Address
+
+--- BATTERY ---
+35. Battery Information
+36. Detailed Battery Health
+
+--- PROCESSES ---
+37. Running Processes
+38. Process Count Summary
+39. Top CPU Processes
+40. Top RAM Processes
+41. Process Search
+42. Process Termination
+
+--- WINDOWS ---
+43. GPU Information
+44. Motherboard Information
+45. Windows Services
+46. Startup Programs
+
+--- PYTHON ---
+47. Python Information
+48. Python Package Check
+
+--- USER ---
+49. User Information
+50. User Session Information
+51. Environment Variables
+
+--- DIAGNOSTICS ---
+52. Health Check
+53. Performance Summary
+54. System Health Score
+55. Quick Diagnostic Scan
+56. Diagnostic Checklist
+57. System Resource Snapshot
+58. System Resource Monitor
+59. Full Diagnostic Report
+60. Save Diagnostic Report
+
+--- OTHER ---
+61. Help
+62. About
+63. Clear Screen
+
+--- ADDITIONAL TOOLS ---
+64. Record Resource History
+65. Process Details by PID
+66. Search Files by Name
+67. Recent Windows Event Logs
+68. List Installed Applications
+69. Export System Snapshot
+
 0.  Exit
 ========================================
 ```
-
 ---
 
-# What Was Added in Version 3.0
+# What Was Added in Version 3.1
 
 The current version has been expanded from a basic PC information program into a more complete diagnostic tool.
 
@@ -394,6 +504,21 @@ Added:
 * System summary
 * Full diagnostic report
 * Saved text reports
+
+---
+
+### Additional Tools Added in Version 3.1
+
+The latest update adds six additional diagnostic and reporting functions:
+
+* **Record Resource History** — logs CPU, RAM, and system-drive usage to a CSV file over a selected period.
+* **Process Details by PID** — shows expanded information about a running process using its process ID.
+* **Search Files by Name** — finds files by full or partial name within a selected folder and its subfolders.
+* **Recent Windows Event Logs** — retrieves recent entries from the Windows System event log using PowerShell.
+* **List Installed Applications** — lists applications registered in common Windows uninstall registry locations, including versions when available.
+* **Export System Snapshot** — saves a timestamped text report containing key system, CPU, memory, storage, network, and battery details.
+
+These additions expand the project’s resource logging, process inspection, file search, Windows troubleshooting, application inventory, and report-export capabilities.
 
 ---
 
@@ -482,8 +607,8 @@ psutil
 The current version provides:
 
 ```text
-53 Menu Options
-50+ Python Functions
+69 Numbered Tools
+60+ Python Functions
 Hardware Diagnostics
 Software Diagnostics
 Network Diagnostics
@@ -630,10 +755,10 @@ Possible future additions include:
 
 ```text
 PC Diagnostic Tool
-Version: 3.0
+Version: 3.1
 ```
 
-Version 3.0 includes expanded **hardware monitoring, process management, file analysis, storage analysis, network diagnostics, performance monitoring, Windows system tools, and diagnostic features**.
+Version 3.1 includes expanded **hardware monitoring, process management, file analysis, storage analysis, network diagnostics, performance monitoring, Windows system tools, and diagnostic features**.
 
 ---
 
