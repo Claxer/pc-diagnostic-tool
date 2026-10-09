@@ -2421,6 +2421,289 @@ def show_help():
     )
 
 
+
+# =========================================================
+# RESOURCE HISTORY LOGGER
+# =========================================================
+
+def record_resource_history():
+    print("\n---------- RESOURCE HISTORY LOGGER ----------")
+    try:
+        seconds = int(input("How many seconds should be recorded? (5-300): "))
+        if seconds < 5 or seconds > 300:
+            print("Please enter a duration between 5 and 300 seconds.")
+            return
+    except ValueError:
+        print("Please enter a whole number.")
+        return
+
+    filename = "resource_history.csv"
+    print("Recording CPU, RAM, and disk usage. Press CTRL+C to stop early.")
+    started = time.time()
+    samples = 0
+
+    try:
+        with open(filename, "a", encoding="utf-8") as file:
+            if file.tell() == 0:
+                file.write("Timestamp,CPU Percent,RAM Percent,Disk Percent\n")
+
+            while time.time() - started < seconds:
+                cpu = psutil.cpu_percent(interval=1)
+                memory = psutil.virtual_memory().percent
+                disk = psutil.disk_usage(os.path.abspath(os.sep)).percent
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                file.write(f"{timestamp},{cpu},{memory},{disk}\n")
+                file.flush()
+                print(f"{timestamp} | CPU: {cpu}% | RAM: {memory}% | Disk: {disk}%")
+                samples += 1
+    except KeyboardInterrupt:
+        print("\nRecording stopped by user.")
+    except OSError as error:
+        print("Unable to save resource history:", error)
+        return
+
+    print("Samples recorded:", samples)
+    print("Saved to:", os.path.abspath(filename))
+
+
+# =========================================================
+# PROCESS DETAILS BY PID
+# =========================================================
+
+def show_process_details():
+    print("\n---------- PROCESS DETAILS ----------")
+    try:
+        pid = int(input("Enter process PID: ").strip())
+        process = psutil.Process(pid)
+        with process.oneshot():
+            print("Process ID      :", process.pid)
+            print("Process Name    :", process.name())
+            print("Status          :", process.status())
+            print("Executable      :", process.exe() or "Unavailable")
+            print("Parent PID      :", process.ppid())
+            print("Created         :", datetime.fromtimestamp(process.create_time()).strftime("%Y-%m-%d %H:%M:%S"))
+            print("CPU Usage       :", process.cpu_percent(interval=0.2), "%")
+            print("Memory Usage    :", round(process.memory_info().rss / (1024 ** 2), 2), "MB")
+            print("Memory Percent  :", round(process.memory_percent(), 2), "%")
+            try:
+                print("Threads         :", process.num_threads())
+            except (psutil.AccessDenied, psutil.NoSuchProcess):
+                print("Threads         : Unavailable")
+    except ValueError:
+        print("Please enter a valid numeric PID.")
+    except psutil.NoSuchProcess:
+        print("No process exists with that PID.")
+    except psutil.AccessDenied:
+        print("Access denied. Try running the program with appropriate permissions.")
+    except (OSError, psutil.Error) as error:
+        print("Unable to retrieve process details:", error)
+
+
+# =========================================================
+# FILE NAME SEARCH
+# =========================================================
+
+def search_files_by_name():
+    print("\n---------- FILE NAME SEARCH ----------")
+    folder = input("Enter the folder path to search: ").strip().strip('"')
+    keyword = input("Enter all or part of the file name: ").strip().lower()
+
+    if not os.path.isdir(folder):
+        print("The folder path is invalid or inaccessible.")
+        return
+    if not keyword:
+        print("Please enter a file name or search term.")
+        return
+
+    matches = []
+    skipped = 0
+    print("Searching... Please wait.")
+    for root, directories, files in os.walk(folder):
+        for filename in files:
+            if keyword in filename.lower():
+                matches.append(os.path.join(root, filename))
+                if len(matches) >= 200:
+                    break
+        if len(matches) >= 200:
+            break
+
+    if not matches:
+        print("No matching files were found.")
+        return
+
+    print(f"\nFound {len(matches)} matching file(s):")
+    for path in matches:
+        print("-", path)
+    if len(matches) >= 200:
+        print("Search stopped after 200 results to keep the output manageable.")
+
+
+# =========================================================
+# WINDOWS EVENT LOG VIEWER
+# =========================================================
+
+def show_recent_windows_events():
+    print("\n---------- RECENT WINDOWS EVENTS ----------")
+    if platform.system() != "Windows":
+        print("This feature is available only on Windows.")
+        return
+
+    try:
+        amount = int(input("How many recent events should be shown? (1-30): "))
+        if amount < 1 or amount > 30:
+            print("Enter a number from 1 to 30.")
+            return
+    except ValueError:
+        print("Please enter a valid whole number.")
+        return
+
+    command = [
+        "powershell", "-NoProfile", "-Command",
+        f"Get-WinEvent -LogName System -MaxEvents {amount} -ErrorAction Stop | "
+        "Select-Object TimeCreated, Id, LevelDisplayName, ProviderName, Message | "
+        "Format-List"
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=20)
+        if result.returncode == 0 and result.stdout.strip():
+            print(result.stdout)
+        else:
+            message = result.stderr.strip() or "No event information was returned."
+            print("Unable to read Windows events:", message)
+    except subprocess.TimeoutExpired:
+        print("The event log request took too long and was stopped.")
+    except OSError as error:
+        print("Unable to run PowerShell:", error)
+
+
+# =========================================================
+# INSTALLED APPLICATIONS
+# =========================================================
+
+def show_installed_applications():
+    print("\n---------- INSTALLED APPLICATIONS ----------")
+    if platform.system() != "Windows":
+        print("This feature is intended for Windows systems.")
+        return
+
+    try:
+        import winreg
+    except ImportError:
+        print("Windows registry access is not available on this system.")
+        return
+
+    registry_locations = [
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"),
+        (winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall")
+    ]
+    applications = set()
+
+    for hive, path in registry_locations:
+        try:
+            with winreg.OpenKey(hive, path) as key:
+                count = winreg.QueryInfoKey(key)[0]
+                for index in range(count):
+                    try:
+                        subkey_name = winreg.EnumKey(key, index)
+                        with winreg.OpenKey(key, subkey_name) as subkey:
+                            name, _ = winreg.QueryValueEx(subkey, "DisplayName")
+                            try:
+                                version, _ = winreg.QueryValueEx(subkey, "DisplayVersion")
+                            except OSError:
+                                version = ""
+                            if name:
+                                applications.add((str(name), str(version)))
+                    except OSError:
+                        continue
+        except OSError:
+            continue
+
+    if not applications:
+        print("No registered applications could be found.")
+        return
+
+    sorted_apps = sorted(applications, key=lambda item: item[0].lower())
+    print("Registered applications found:", len(sorted_apps))
+    print("\nAPPLICATION NAME | VERSION")
+    print("-" * 65)
+    for name, version in sorted_apps:
+        print(f"{name} | {version or 'Not listed'}")
+
+
+# =========================================================
+# EXPORT SYSTEM SNAPSHOT
+# =========================================================
+
+def export_system_snapshot():
+    print("\n---------- EXPORT SYSTEM SNAPSHOT ----------")
+    now = datetime.now()
+    filename = "system_snapshot_" + now.strftime("%Y%m%d_%H%M%S") + ".txt"
+    memory = psutil.virtual_memory()
+    swap = psutil.swap_memory()
+    disk = psutil.disk_usage(os.path.abspath(os.sep))
+    battery = psutil.sensors_battery()
+    cpu_frequency = psutil.cpu_freq()
+
+    lines = [
+        "PC DIAGNOSTIC TOOL - SYSTEM SNAPSHOT",
+        "=" * 45,
+        f"Created: {now.strftime('%Y-%m-%d %H:%M:%S')}",
+        "",
+        "SYSTEM",
+        f"Computer Name: {socket.gethostname()}",
+        f"Operating System: {platform.system()} {platform.release()}",
+        f"OS Version: {platform.version()}",
+        f"Architecture: {platform.architecture()[0]}",
+        f"Processor: {platform.processor() or 'Not reported'}",
+        f"Python Version: {platform.python_version()}",
+        "",
+        "CPU",
+        f"Physical Cores: {psutil.cpu_count(logical=False)}",
+        f"Logical CPUs: {psutil.cpu_count(logical=True)}",
+        f"CPU Usage: {psutil.cpu_percent(interval=1)}%",
+        f"CPU Frequency: {round(cpu_frequency.current, 2)} MHz" if cpu_frequency else "CPU Frequency: Unavailable",
+        "",
+        "MEMORY",
+        f"Total RAM: {memory.total / (1024 ** 3):.2f} GB",
+        f"Used RAM: {memory.used / (1024 ** 3):.2f} GB",
+        f"Available RAM: {memory.available / (1024 ** 3):.2f} GB",
+        f"RAM Usage: {memory.percent}%",
+        f"Swap Usage: {swap.percent}%",
+        "",
+        "STORAGE",
+        f"System Drive Total: {disk.total / (1024 ** 3):.2f} GB",
+        f"System Drive Used: {disk.used / (1024 ** 3):.2f} GB",
+        f"System Drive Free: {disk.free / (1024 ** 3):.2f} GB",
+        f"System Drive Usage: {disk.percent}%",
+        "",
+        "NETWORK",
+    ]
+    network = psutil.net_io_counters()
+    if network:
+        lines.extend([
+            f"Data Sent: {network.bytes_sent / (1024 ** 3):.2f} GB",
+            f"Data Received: {network.bytes_recv / (1024 ** 3):.2f} GB"
+        ])
+    else:
+        lines.append("Network counters: Unavailable")
+
+    lines.extend(["", "BATTERY"])
+    if battery:
+        lines.append(f"Battery Level: {battery.percent}%")
+        lines.append(f"Power Connected: {'Yes' if battery.power_plugged else 'No'}")
+    else:
+        lines.append("Battery information: Not available")
+
+    try:
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write("\n".join(lines) + "\n")
+        print("System snapshot exported successfully.")
+        print("File:", os.path.abspath(filename))
+    except OSError as error:
+        print("Unable to export system snapshot:", error)
+
+
 # =========================================================
 # ABOUT
 # =========================================================
@@ -2587,6 +2870,14 @@ def show_menu():
     print("61. Help")
     print("62. About")
     print("63. Clear Screen")
+
+    print("\n--- ADDITIONAL TOOLS ---")
+    print("64. Record Resource History")
+    print("65. Process Details by PID")
+    print("66. Search Files by Name")
+    print("67. Recent Windows Event Logs")
+    print("68. List Installed Applications")
+    print("69. Export System Snapshot")
 
     print("\n0.  Exit")
 
@@ -2796,6 +3087,24 @@ def main():
         elif choice == "63":
             clear_screen()
 
+        elif choice == "64":
+            record_resource_history()
+
+        elif choice == "65":
+            show_process_details()
+
+        elif choice == "66":
+            search_files_by_name()
+
+        elif choice == "67":
+            show_recent_windows_events()
+
+        elif choice == "68":
+            show_installed_applications()
+
+        elif choice == "69":
+            export_system_snapshot()
+
         elif choice == "0":
             print(
                 "\nThank you for using "
@@ -2806,7 +3115,7 @@ def main():
         else:
             print(
                 "\nInvalid choice."
-                " Please select a number from 0 to 63."
+                " Please select a valid menu option from 0 to 69."
             )
 
 
