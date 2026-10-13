@@ -1,764 +1,553 @@
 # PC Diagnostic Tool
 
-A simple **Python-based PC Diagnostic Tool** that runs in the terminal and provides a wide range of system diagnostic and monitoring features. The program can display information about the computer's hardware, operating system, CPU, RAM, storage, network, battery, running processes, Python environment, files, folders, and overall system health.
+A Python-based **PC Diagnostic Tool** designed to inspect, monitor, and analyze computer hardware, software, system resources, running processes, storage, network connections, and overall system performance.
 
-The project started as a basic system information program and was expanded into a more complete command-line diagnostic utility. It now includes **hardware monitoring, process management, storage analysis, network testing, file analysis, performance monitoring, health checks, and diagnostic report generation**.
+The project includes two editions:
 
-This project was created as a beginner-friendly Python project to practice functions, loops, conditional statements, user input, lists, dictionaries, exception handling, file handling, directory traversal, process management, subprocess commands, system information, and external Python libraries.
+* **Command-Line Edition (Version 3.1)** — A terminal-based diagnostic application with 69 numbered tools for system inspection, hardware monitoring, process management, file analysis, network diagnostics, and report generation.
+* **NEXUS GUI Ultimate Edition (Version 5.0.0)** — A modern graphical desktop application featuring a dashboard, diagnostic scans, process management, hardware information, network monitoring, folder analysis, and report exporting.
+
+This project was developed as a beginner-friendly Python learning project to demonstrate how Python can interact with the operating system through built-in modules and external libraries.
+
+---
+
+## Table of Contents
+
+* [Features](#features)
+* [Command-Line Edition](#command-line-edition)
+* [NEXUS GUI Ultimate Edition](#nexus-gui-ultimate-edition)
+* [GUI Features](#gui-features)
+* [Installation](#installation)
+* [How to Run](#how-to-run)
+* [Report Export](#report-export)
+* [Python Concepts Used](#python-concepts-used)
+* [Libraries and Modules](#libraries-and-modules)
+* [Project Structure](#project-structure)
+* [System Compatibility](#system-compatibility)
+* [Safety Notes](#safety-notes)
+* [Limitations](#limitations)
+* [Future Improvements](#future-improvements)
+* [Author](#author)
 
 ---
 
 ## Features
 
-### CPU Load Per Core
-
-The tool can display CPU usage for each individual processor core.
-
-* Displays each CPU core
-* Shows CPU usage percentage
-* Uses a loop to display each core
-* Helps identify uneven CPU usage
-* Provides more detailed CPU monitoring
-
-### Virtual Memory and Swap
-
-The program provides information about virtual memory and swap memory.
-
-* Virtual memory total
-* Virtual memory used
-* Available virtual memory
-* Virtual memory usage percentage
-* Swap memory total
-* Swap memory used
-* Swap memory free space
-* Swap memory usage percentage
-
-### Disk Activity
-
-The tool can display basic disk activity information.
-
-* Total read operations
-* Total write operations
-* Total data read
-* Total data written
-* Disk I/O statistics
-
-### Network Interface Details
-
-The program can inspect available network interfaces.
-
-* Network interface names
-* IP addresses
-* Network masks
-* Broadcast addresses
-* Available network adapters
-* Address family information
-
-### Hostname and DNS Information
-
-The program can retrieve basic hostname and DNS-related information.
-
-* Computer hostname
-* Canonical hostname
-* IP addresses
-* Hostname lookup information
-* Basic DNS information
-
-### Windows Services
-
-For Windows systems, the program can display available Windows services.
-
-* Lists Windows services
-* Displays service names
-* Uses the Windows `sc` command
-* Displays up to 30 services
-* Handles systems where the command is unavailable
-
-### Startup Programs
-
-The program checks the Windows startup folders.
-
-* User startup folder
-* System startup folder
-* Startup files
-* Startup shortcuts
-* Displays detected startup items
-
-### System Architecture Details
-
-Provides additional operating system and architecture information.
-
-* Operating system
-* OS release
-* OS version
-* Machine type
-* Processor
-* System architecture
-* Platform information
-* Python version
-
-### Python Package Check
-
-The program checks whether important Python packages and tools are installed.
-
-Currently checked packages include:
-
-* `psutil`
-* `pip`
-* `setuptools`
-
-The feature uses Python's package manager through `subprocess` to check package availability.
-
-### Folder File Counter
-
-The program can count files and folders inside a selected directory.
-
-* Counts files
-* Counts folders
-* Includes subfolders
-* Uses `os.walk()`
-* Displays total file count
-* Displays total folder count
-
-### File Extension Analyzer
-
-The tool can analyze the types of files inside a folder.
-
-* Detects file extensions
-* Counts files by extension
-* Supports subfolders
-* Detects files without extensions
-* Sorts file types based on file count
-
-Example:
-
-```text
-.py : 18 file(s)
-.txt : 25 file(s)
-.jpg : 12 file(s)
-.mp4 : 5 file(s)
-```
-
-### Duplicate File Finder
-
-The program can search for possible duplicate files.
-
-* Scans files inside a folder
-* Groups files based on file size
-* Displays possible duplicate groups
-* Displays file paths
-* Shows the size of possible duplicate files
-
-> The current version identifies possible duplicates by comparing file sizes. It does not compare the actual contents or file hashes.
-
-### Detailed Battery Health
-
-Provides additional battery information.
-
-* Battery percentage
-* Charging status
-* Estimated remaining time
-* Battery condition
-* High battery status
-* Normal battery status
-* Low battery status
-* Critical battery status
-
-### Diagnostic Checklist
-
-The program performs a basic checklist of important system resources.
-
-It checks:
-
-* CPU usage
-* RAM usage
-* Disk usage
-* Battery status
-
-The program counts detected issues and displays a final diagnostic result.
-
-### System Resource Monitor
-
-The program can continuously monitor system resources.
-
-* Real-time CPU usage
-* Real-time RAM usage
-* Continuous monitoring
-* Updates every second
-* Runs until manually stopped
-* Uses `CTRL+C` to stop monitoring
-
-Example:
-
-```text
----------- SYSTEM RESOURCE MONITOR ----------
-Press CTRL+C to stop the monitor.
-
-CPU: 18.5% | RAM: 55.2%
-CPU: 21.3% | RAM: 55.4%
-CPU: 17.8% | RAM: 55.1%
-```
-
-### Process Search
-
-The program can search for running processes.
-
-* Allows the user to enter a process name
-* Searches currently running processes
-* Displays matching process IDs
-* Displays process names
-* Displays process status
-* Handles processes that disappear during scanning
-
-### Process Termination
-
-The program provides a basic process termination feature.
-
-* Accepts a process ID
-* Displays the selected process name
-* Requests user confirmation
-* Attempts to terminate the process
-* Handles invalid process IDs
-* Handles missing processes
-* Handles permission errors
-
-Example:
-
-```text
----------- PROCESS TERMINATION ----------
-Enter process PID: 2210
-
-Process Name: example.exe
-Are you sure you want to terminate this process? (yes/no): no
-
-Process termination cancelled.
-```
-
-### Clear Screen
-
-The program can clear the terminal screen.
-
-* Supports Windows
-* Supports other operating systems
-* Uses `cls` on Windows
-* Uses `clear` on other systems
+The project provides diagnostic and monitoring tools organized into several categories.
+
+* System and operating system information
+* CPU and memory monitoring
+* Storage and disk activity analysis
+* Network diagnostics
+* Battery information and health checks
+* Running process inspection and management
+* Windows services and startup programs
+* Python environment and package checking
+* File and folder analysis
+* System health checks
+* Performance monitoring
+* Diagnostic report generation
+* Resource history logging
+* Graphical dashboard and diagnostic interface
+
+The available features depend on which edition is being used.
 
 ---
 
-### Resource History Logger
+# Command-Line Edition
 
-The tool can record CPU, RAM, and system-drive usage over a selected period and save the measurements to a CSV file.
+**Version 3.1**
 
-* Lets the user choose a recording duration from 5 to 300 seconds
-* Records a timestamp for each sample
-* Tracks CPU, RAM, and disk usage percentages
-* Displays measurements while recording
-* Supports stopping the recording early with `CTRL+C`
-* Saves the results to `resource_history.csv` for later review
+The original command-line edition provides 69 numbered tools, plus an exit option.
 
-### Process Details by PID
+### System Information
 
-The program can show detailed information about a selected running process.
+* System information and summary
+* System architecture details
+* Current date and time
+* Boot information
+* System uptime
+* Operating system and Python information
 
-* Accepts a process ID (PID)
-* Displays process name and status
-* Shows the executable path and parent PID
-* Displays the process creation time
-* Shows CPU usage, memory usage, and memory percentage
-* Reports the number of threads when available
-* Handles invalid PIDs, closed processes, and permission errors
+### CPU and Memory
 
-### Search Files by Name
-
-The tool can search a selected folder and its subfolders for files by name.
-
-* Searches using a full or partial file name
-* Ignores uppercase and lowercase differences in the search term
-* Displays the matching file paths
-* Checks that the selected folder exists before searching
-* Limits the displayed results to 200 matches to keep output manageable
-
-### Recent Windows Event Logs
-
-On Windows, the program can display recent events from the System event log.
-
-* Lets the user choose between 1 and 30 recent events
-* Displays event time, event ID, level, source, and message
-* Uses PowerShell to retrieve event information
-* Handles unavailable PowerShell commands, timeouts, and access errors
-* Shows a message if used on a non-Windows operating system
-
-### Installed Applications List
-
-On Windows, the program can list applications registered in common Windows uninstall registry locations.
-
-* Displays application names
-* Displays version information when available
-* Checks system-wide and current-user registry locations
-* Removes duplicate name/version entries from the results
-* Sorts the application list by name
-* Skips entries that cannot be accessed
-
-### Export System Snapshot
-
-The program can export a timestamped text file containing a snapshot of important system information.
-
-* Includes operating system, computer name, architecture, processor, and Python version
-* Includes CPU core counts, usage, and frequency when available
-* Includes RAM and swap usage
-* Includes system-drive capacity and usage
-* Includes network data sent and received
-* Includes battery level and power connection status when available
-* Creates a file named like `system_snapshot_YYYYMMDD_HHMMSS.txt`
-
-> The Windows Event Logs and Installed Applications features are intended for Windows. Some information may be unavailable depending on the operating system, hardware, permissions, or system configuration.
-
----
-
-# Updated Menu
-
-The current version contains **69 numbered tools**, plus the exit option. Some tools are operating-system-specific, as noted in their descriptions.
-
-```text
-========================================
-          PC DIAGNOSTIC TOOL
-========================================
-
---- SYSTEM ---
-1.  System Information
-2.  System Architecture Details
-3.  System Summary
-4.  Current Date and Time
-5.  Boot Information
-6.  System Uptime
-
---- CPU AND MEMORY ---
-7.  CPU Information
-8.  CPU Load Per Core
-9.  CPU Load Average
-10. RAM Information
-11. Detailed RAM Information
-12. Virtual Memory / Swap
-13. System Temperature
-
---- STORAGE ---
-14. Disk Information
-15. Disk Activity
-16. Disk Speed Snapshot
-17. Storage Summary
-18. Disk Space Warning
-19. Folder Size Checker
-20. Folder File Counter
-21. Large File Finder
-22. File Extension Analyzer
-23. Duplicate File Finder
-24. Temporary File Checker
-
---- NETWORK ---
-25. Network Information
-26. Network Interface Details
-27. Network Traffic
-28. Network Speed Snapshot
-29. Network Packet Statistics
-30. Network Connections
-31. Hostname and DNS Information
-32. Internet Connection Test
-33. Ping Test
-34. MAC Address
-
---- BATTERY ---
-35. Battery Information
-36. Detailed Battery Health
-
---- PROCESSES ---
-37. Running Processes
-38. Process Count Summary
-39. Top CPU Processes
-40. Top RAM Processes
-41. Process Search
-42. Process Termination
-
---- WINDOWS ---
-43. GPU Information
-44. Motherboard Information
-45. Windows Services
-46. Startup Programs
-
---- PYTHON ---
-47. Python Information
-48. Python Package Check
-
---- USER ---
-49. User Information
-50. User Session Information
-51. Environment Variables
-
---- DIAGNOSTICS ---
-52. Health Check
-53. Performance Summary
-54. System Health Score
-55. Quick Diagnostic Scan
-56. Diagnostic Checklist
-57. System Resource Snapshot
-58. System Resource Monitor
-59. Full Diagnostic Report
-60. Save Diagnostic Report
-
---- OTHER ---
-61. Help
-62. About
-63. Clear Screen
-
---- ADDITIONAL TOOLS ---
-64. Record Resource History
-65. Process Details by PID
-66. Search Files by Name
-67. Recent Windows Event Logs
-68. List Installed Applications
-69. Export System Snapshot
-
-0.  Exit
-========================================
-```
----
-
-# What Was Added in Version 3.1
-
-The current version has been expanded from a basic PC information program into a more complete diagnostic tool.
-
-### Hardware Monitoring
-
-Added:
-
+* CPU information
 * CPU load per core
-* Virtual memory
-* Swap memory
-* Disk activity
-* Detailed battery health
-* Temperature monitoring
-* GPU information
-* Motherboard information
-
-### Process Management
-
-Added:
-
-* Running process listing
-* Top CPU processes
-* Top RAM processes
-* Process searching
-* Process termination
-* Continuous resource monitoring
-
-### Network Diagnostics
-
-Added:
-
-* Network interfaces
-* Hostname and DNS information
-* Network connections
-* Internet connection testing
-* Ping testing
-* MAC address detection
+* CPU load average
+* RAM information
+* Detailed RAM information
+* Virtual memory and swap usage
+* System temperature information when supported
 
 ### Storage and File Analysis
 
-Added:
-
-* Folder size checking
-* Folder file counting
-* File extension analysis
-* Large file searching
-* Possible duplicate file detection
-* Temporary file checking
+* Disk information
+* Disk activity statistics
+* Disk speed snapshot
 * Storage summary
 * Disk space warnings
+* Folder size checker
+* Folder file counter
+* Large file finder
+* File extension analyzer
+* Duplicate file finder
+* Temporary file checker
+
+### Network Diagnostics
+
+* Network information
+* Network interface details
+* Network traffic statistics
+* Network speed snapshot
+* Network packet statistics
+* Network connections
+* Hostname and DNS information
+* Internet connection test
+* Ping test
+* MAC address detection
+
+### Battery Monitoring
+
+* Battery information
+* Battery percentage
+* Charging status
+* Estimated remaining time when available
+* Detailed battery health status
+
+### Process Management
+
+* Running process listing
+* Process count summary
+* Top CPU processes
+* Top RAM processes
+* Process search
+* Process termination
+* Detailed process information by PID
 
 ### Windows System Tools
 
-Added:
-
+* GPU information
+* Motherboard information
 * Windows services
 * Startup programs
-* Windows-specific hardware information
-* System architecture details
+* Recent Windows System event logs
+* Installed applications list
+
+Some hardware information depends on operating system support, installed utilities, and available hardware sensors.
 
 ### Python Environment
 
-Added:
-
 * Python information
-* Python installation path
-* Python build information
-* Python compiler information
+* Python installation details
+* Python build and compiler information
 * Python package checking
 
-### Diagnostic Tools
+### Diagnostics and Reports
 
-Added:
-
-* Quick diagnostic scan
-* Diagnostic checklist
+* Health check
 * Performance summary
 * System health score
-* System summary
+* Quick diagnostic scan
+* Diagnostic checklist
+* System resource snapshot
+* Continuous resource monitoring
 * Full diagnostic report
-* Saved text reports
+* Save diagnostic report
+* Record resource history
+* Export system snapshot
+
+### Additional Tools
+
+* User information
+* User session information
+* Environment variables
+* File search by name
+* Clear terminal screen
+* Help and application information
 
 ---
 
-### Additional Tools Added in Version 3.1
+# NEXUS GUI Ultimate Edition
 
-The latest update adds six additional diagnostic and reporting functions:
+**Version 5.0.0**
 
-* **Record Resource History** — logs CPU, RAM, and system-drive usage to a CSV file over a selected period.
-* **Process Details by PID** — shows expanded information about a running process using its process ID.
-* **Search Files by Name** — finds files by full or partial name within a selected folder and its subfolders.
-* **Recent Windows Event Logs** — retrieves recent entries from the Windows System event log using PowerShell.
-* **List Installed Applications** — lists applications registered in common Windows uninstall registry locations, including versions when available.
-* **Export System Snapshot** — saves a timestamped text report containing key system, CPU, memory, storage, network, and battery details.
+NEXUS is the graphical desktop edition of the PC Diagnostic Tool. It uses Python and CustomTkinter to provide a modern interface for inspecting computer resources and performing basic diagnostic tasks.
 
-These additions expand the project’s resource logging, process inspection, file search, Windows troubleshooting, application inventory, and report-export capabilities.
+The interface uses a dark theme, sidebar navigation, dashboard cards, progress indicators, and organized diagnostic pages.
+
+## GUI Features
+
+### 1. Overview Dashboard
+
+Provides a quick summary of the computer's current resource usage.
+
+* CPU usage percentage
+* RAM usage percentage
+* Storage usage
+* Running process count
+* Resource usage indicators
+* System health signals
+* Quick overview of important system resources
+
+### 2. Diagnostic Scan
+
+Performs a basic rule-based scan of selected system resources.
+
+* Checks CPU usage
+* Checks memory usage
+* Checks disk space
+* Checks battery status when available
+* Identifies resource usage that exceeds configured thresholds
+* Displays diagnostic warnings and results
+
+The scan provides basic indicators and is not a replacement for professional hardware diagnostics.
+
+### 3. Process Manager
+
+Allows users to inspect and manage running processes.
+
+* Lists running processes
+* Searches processes by name or process ID
+* Displays process IDs and names
+* Displays memory usage
+* Sorts processes by memory consumption
+* Allows a selected process to be terminated
+* Requests confirmation before terminating a process
+* Handles common process access and availability errors
+
+**Important:** Terminating a process may cause an application or system component to stop working. Always verify the selected process before confirming.
+
+### 4. Hardware and Operating System Information
+
+Displays useful information about the computer's software environment and hardware resources.
+
+* Operating system information
+* System architecture
+* Processor information
+* Python version
+* Memory information
+* General system details
+
+The amount of information available depends on the operating system and hardware.
+
+### 5. Network Diagnostics
+
+Provides basic information about network interfaces and connectivity.
+
+* Network interface information
+* Network traffic counters
+* Data sent and received
+* Basic HTTPS connectivity test
+* Network connection troubleshooting information
+
+The connectivity test checks whether a connection can be established. It does not provide a complete internet speed test.
+
+### 6. Folder Analyzer
+
+Analyzes a selected folder and its contents.
+
+* Counts files
+* Counts subfolders
+* Calculates total folder size
+* Analyzes file extensions
+* Summarizes file types
+* Helps users understand how storage is distributed within a folder
+
+Results depend on folder permissions and the files that can be accessed.
+
+### 7. Diagnostic Report Export
+
+Allows users to save diagnostic information for later reference.
+
+Supported export formats:
+
+* **TXT** — Readable text reports
+* **HTML** — Reports that can be opened in a web browser
+* **CSV** — Structured data suitable for spreadsheets
+
+Reports are saved locally in the `PCDiagnosticReports` folder inside the user's home directory.
 
 ---
 
-# Updated Learning Objectives
+# Installation
 
-This project provides practice with several important Python programming concepts:
+## Requirements
 
-* Functions
-* Function calls
-* Variables
-* Strings
+The GUI edition requires:
+
+* Python 3.10 or newer recommended
+* CustomTkinter
+* psutil
+
+Python versions compatible with the installed dependencies may also work.
+
+## 1. Clone the Repository
+
+```bash
+git clone https://github.com/Claxer/PC-Diagnostic-Tool.git
+```
+
+Replace the repository URL with your actual GitHub repository URL if it differs.
+
+## 2. Open the Project Folder
+
+Open the downloaded project in PyCharm, Visual Studio Code, or another Python IDE.
+
+## 3. Install Dependencies
+
+Open a terminal in the project directory and run:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+If the `python` command is unavailable on Windows, try:
+
+```bash
+py -m pip install -r requirements.txt
+```
+
+---
+
+# How to Run
+
+## NEXUS GUI Ultimate Edition
+
+Run the following command from the folder containing `main.py`:
+
+```bash
+python main.py
+```
+
+Alternatively, on Windows:
+
+```bash
+py main.py
+```
+
+The graphical application should open in a separate desktop window.
+
+## Command-Line Edition
+
+Run the Python file containing the original command-line menu:
+
+```bash
+python your_cli_filename.py
+```
+
+Replace `your_cli_filename.py` with the actual filename of the command-line program.
+
+The command-line and GUI editions have separate implementations. Their features and entry-point filenames may differ.
+
+---
+
+# Report Export
+
+The GUI edition can export diagnostic information in several formats.
+
+| Format | Purpose                                             |
+| ------ | --------------------------------------------------- |
+| TXT    | Simple, readable diagnostic reports                 |
+| HTML   | Reports viewable in a web browser                   |
+| CSV    | Structured information for spreadsheet applications |
+
+The command-line edition also includes resource history logging and system snapshot export.
+
+These reports can help users review system information, compare recorded measurements manually, and keep diagnostic records.
+
+---
+
+# Python Concepts Used
+
+This project demonstrates several fundamental and intermediate Python programming concepts.
+
+* Variables and data types
+* Strings and string methods
 * Integers and floating-point numbers
-* Lists
-* Dictionaries
-* Tuples
-* `if`, `elif`, and `else`
-* `for` loops
-* `while` loops
-* `input()`
-* String methods
+* Lists and dictionaries
+* Functions and function calls
+* Conditional statements (`if`, `elif`, `else`)
+* Loops (`for` and `while`)
+* User input
+* Exception handling (`try` and `except`)
 * File handling
 * Directory traversal
-* `os.walk()`
-* Sorting data
-* Lambda functions
-* Exception handling
-* `try` and `except`
-* Modules
-* External libraries
-* Process management
-* Process IDs
-* System resource monitoring
-* Subprocess commands
-* Environment variables
+* Sorting and filtering data
+* Modules and imports
 * Date and time handling
-* Network connections
-* File extensions
-* System information
-* Menu-driven programming
-* Report generation
+* Operating system interaction
+* Process inspection and management
+* Subprocess commands
+* Network connectivity checks
+* CSV and HTML report generation
+* Graphical user interfaces
+* Event-driven programming
+* External library integration
 
 ---
 
-# Python Modules Used
+# Libraries and Modules
 
-The project uses both built-in Python modules and the external `psutil` library.
+## CustomTkinter
 
-### Built-in Modules
+Used by the GUI edition to create the desktop interface, navigation sidebar, dashboard, buttons, frames, and other graphical components.
 
-```text
-platform
-socket
-os
-sys
-subprocess
-getpass
-uuid
-tempfile
-datetime
-```
+## psutil
 
-### External Library
-
-```text
-psutil
-```
-
-`psutil` is used to access system and process information such as:
+Used to retrieve system and process information, including:
 
 * CPU usage
-* CPU frequency
-* RAM usage
+* Memory usage
 * Disk usage
 * Disk activity
-* Network interfaces
-* Network connections
-* Battery information
+* Network statistics
 * Running processes
+* Battery information when supported
 * System uptime
-* Temperature sensors
+
+## Built-in Python Modules
+
+Depending on the edition and feature, the project uses modules such as:
+
+* `os` — File and directory operations
+* `sys` — Python runtime information
+* `platform` — Operating system and architecture information
+* `socket` — Network and hostname information
+* `subprocess` — Running operating system commands
+* `datetime` — Dates and timestamps
+* `csv` — CSV report generation
+* `html` — HTML-related utilities
+* `pathlib` — File and folder path handling
+* `tempfile` — Temporary directory information
+* `uuid` — System-related identifier utilities
+
+Not every module is used by every edition.
 
 ---
 
-# Project Statistics
+# Project Structure
 
-The current version provides:
+The exact files may vary depending on the version of the project.
 
 ```text
-69 Numbered Tools
-60+ Python Functions
-Hardware Diagnostics
-Software Diagnostics
-Network Diagnostics
-Storage Analysis
-Process Management
-Performance Monitoring
-Health Checking
-Report Generation
+PC-Diagnostic-Tool/
+│
+├── main.py
+├── requirements.txt
+├── README.md
+├── .gitignore
+│
+└── PCDiagnosticReports/
+    ├── diagnostic_report.txt
+    ├── diagnostic_report.html
+    └── diagnostic_report.csv
 ```
 
-The exact number of available features may increase as the project continues to be developed.
+The `PCDiagnosticReports` folder is used for exported reports by the GUI edition. It is normally created when reports are saved, rather than being required before the application starts.
+
+The command-line edition may use a different Python filename and may generate additional CSV or text files for resource history and system snapshots.
 
 ---
 
-# Diagnostic Categories
+# System Compatibility
 
-The program can now be divided into several major categories:
+The project is primarily intended for Windows computers, but some general monitoring features may work on other operating systems.
 
-```text
-PC DIAGNOSTIC TOOL
-        |
-        +-- Hardware
-        |     +-- CPU
-        |     +-- RAM
-        |     +-- Disk
-        |     +-- GPU
-        |     +-- Motherboard
-        |     +-- Battery
-        |     +-- Temperature
-        |
-        +-- Operating System
-        |     +-- Windows Information
-        |     +-- Services
-        |     +-- Startup Programs
-        |     +-- Architecture
-        |     +-- Environment Variables
-        |
-        +-- Processes
-        |     +-- Running Processes
-        |     +-- CPU Processes
-        |     +-- RAM Processes
-        |     +-- Process Search
-        |     +-- Process Termination
-        |
-        +-- Storage
-        |     +-- Disk Usage
-        |     +-- Folder Size
-        |     +-- File Counter
-        |     +-- File Extensions
-        |     +-- Large Files
-        |     +-- Duplicate Files
-        |     +-- Temporary Files
-        |
-        +-- Network
-        |     +-- IP Address
-        |     +-- Network Interfaces
-        |     +-- DNS
-        |     +-- Connections
-        |     +-- Internet Test
-        |     +-- Ping
-        |     +-- MAC Address
-        |
-        +-- Performance
-        |     +-- CPU Usage
-        |     +-- RAM Usage
-        |     +-- Disk Activity
-        |     +-- Resource Monitor
-        |     +-- Health Score
-        |
-        +-- Reports
-              +-- Quick Scan
-              +-- Checklist
-              +-- Full Report
-              +-- Saved Report
-```
+| Feature                        | Compatibility                                    |
+| ------------------------------ | ------------------------------------------------ |
+| CPU and RAM monitoring         | Depends on platform and library support          |
+| Disk usage                     | Depends on available drives and permissions      |
+| Process inspection             | Depends on process permissions                   |
+| Process termination            | May require additional permissions               |
+| Battery information            | Requires supported battery hardware              |
+| Windows services               | Windows-specific                                 |
+| Windows event logs             | Windows-specific                                 |
+| Installed application registry | Windows-specific                                 |
+| Network diagnostics            | Requires available network interfaces            |
+| Hardware sensor information    | Depends on hardware and operating system support |
 
----
-
-# Updated Purpose
-
-The purpose of this project is to create a beginner-friendly command-line application that demonstrates how Python can interact with a computer's operating system.
-
-Instead of only displaying basic computer information, the program now provides several diagnostic categories that allow users to inspect **hardware resources, software information, running processes, network connections, storage usage, files, folders, and system performance**.
-
-The project also demonstrates how Python can interact with operating-system commands through `subprocess`, work with files and directories using `os`, inspect processes using `psutil`, and generate diagnostic reports using standard Python file handling.
-
-The project is designed mainly for **learning and basic system inspection**, rather than replacing professional diagnostic software.
+Some diagnostic information may be unavailable on certain computers.
 
 ---
 
 # Safety Notes
 
-Most features of the program only read and display information.
-
-However, the **Process Termination** feature can affect currently running applications.
+Most features inspect and display system information. However, process termination and some system-level diagnostic operations require caution.
 
 Users should:
 
-* Check the process name before terminating it.
-* Avoid terminating important Windows system processes.
-* Avoid terminating processes they do not recognize.
-* Use administrator permissions only when necessary.
-* Understand that terminating some processes can cause applications or system components to stop working.
+* Verify a process before terminating it.
+* Avoid terminating unfamiliar Windows system processes.
+* Avoid running the application with administrator privileges unless necessary.
+* Understand that some processes cannot be inspected because of permission restrictions.
+* Avoid interpreting basic diagnostic warnings as proof of hardware failure.
+* Review exported reports before sharing them, since they may contain information about the computer or user environment.
 
-The program does **not automatically delete files**, clean temporary files, modify system settings, or change hardware configurations.
+The application is intended for learning and basic system inspection. It should not be treated as a replacement for professional repair tools, antivirus software, or comprehensive hardware diagnostics.
+
+---
+
+# Limitations
+
+The current editions have different capabilities.
+
+### Command-Line Edition
+
+* Uses a text-based menu.
+* Some features are specific to Windows.
+* Hardware sensor information may not be available on every computer.
+* Duplicate file detection based only on file size can identify possible duplicates but cannot confirm identical contents.
+* Resource monitoring and reporting depend on the availability of system information.
+
+### NEXUS GUI Ultimate Edition
+
+* Provides a graphical interface for selected diagnostic features rather than all 69 command-line tools.
+* Uses basic rule-based diagnostic thresholds.
+* Does not provide a complete hardware stress test.
+* Does not guarantee accurate GPU, motherboard, or temperature readings on all computers.
+* Network traffic counters are not equivalent to an internet speed test.
+* Process termination may fail when permissions are insufficient or the process has already closed.
+* Historical comparisons and advanced performance charts are not included in the current feature set.
 
 ---
 
 # Future Improvements
 
-Possible future additions include:
+Possible future enhancements include:
 
-* Real-time CPU graphs
-* Real-time RAM graphs
-* Real-time disk graphs
+* Real-time CPU usage graphs
+* Real-time RAM usage graphs
+* Disk activity charts
+* Historical performance comparisons
+* Automatic diagnostic history
+* Advanced hardware inventory
+* Improved GPU information and utilization monitoring
+* CPU and GPU temperature monitoring
+* Disk health and SMART information
+* More accurate duplicate-file detection using file hashes
+* Automatic process refresh
+* Additional process filtering options
+* Detailed network download and upload monitoring
 * Internet speed testing
-* Network download/upload monitoring
-* CPU temperature monitoring improvements
-* GPU temperature monitoring
-* GPU utilization monitoring
-* Disk health monitoring
-* SMART disk information
-* File hash comparison
-* More accurate duplicate-file detection
-* Process filtering
-* Process auto-refresh
-* Process resource history
-* Network adapter statistics
-* Automatic health recommendations
-* CSV report export
-* JSON report export
-* More detailed hardware inventory
-* Diagnostic history
-* Automatic report timestamps
-* System performance logging
-* Automatic diagnostic summaries
-* More advanced Windows startup information
-* Graphical user interface version
+* More advanced health recommendations
 * Scheduled diagnostic scans
+* Additional report customization
+* JSON report export
+* More detailed battery health information
+* Expanded graphical interface features
+* Integration of more command-line tools into the GUI edition
 
 ---
 
 # Version
 
-```text
-PC Diagnostic Tool
-Version: 3.1
-```
+**Project:** PC Diagnostic Tool
 
-Version 3.1 includes expanded **hardware monitoring, process management, file analysis, storage analysis, network diagnostics, performance monitoring, Windows system tools, and diagnostic features**.
+**Command-Line Edition:** Version 3.1
+
+**NEXUS GUI Ultimate Edition:** Version 5.0.0
+
+The project continues to evolve as additional diagnostic functions, monitoring features, and interface improvements are developed.
 
 ---
 
@@ -768,4 +557,4 @@ Version 3.1 includes expanded **hardware monitoring, process management, file an
 
 Aspiring Information Technology Student
 
-Created as a Python learning and system diagnostic project.
+Created as a Python learning project focused on system diagnostics, resource monitoring, process management, file analysis, network inspection, and desktop application development.
